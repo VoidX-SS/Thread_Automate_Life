@@ -1,0 +1,76 @@
+name: Threads life bot
+
+on:
+  schedule:
+    # 19:15 Asia/Ho_Chi_Minh every Tue, Thu, Sun (UTC+7, no DST).
+    - cron: "15 12 * * 0,2,4"
+    # Optional reply scan at 19:45 Asia/Ho_Chi_Minh every day.
+    - cron: "45 12 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to run"
+        required: true
+        default: "post"
+        type: choice
+        options: [post, reply]
+      live:
+        description: "Post live (only after you finish setup)"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: threads-life-bot
+      cancel-in-progress: false
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
+      ENABLE_REPLIES: ${{ vars.ENABLE_REPLIES || 'false' }}
+      REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '3' }}
+      TOPIC_SEED: ${{ vars.TOPIC_SEED || 'campus life, late homework, friendship, rainy evenings, cheap meals' }}
+      TREND_HINT: ${{ vars.TREND_HINT || '' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Choose scheduled mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+            echo "live=${{ inputs.live }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "15 12 * * 0,2,4" ]; then
+            echo "mode=post" >> "$GITHUB_OUTPUT"
+            echo "live=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=reply" >> "$GITHUB_OUTPUT"
+            echo "live=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run bot
+        run: |
+          ARGS="--mode ${{ steps.mode.outputs.mode }}"
+          if [ "${{ steps.mode.outputs.live }}" = "true" ]; then ARGS="$ARGS --live"; fi
+          python thread_life_bot.py $ARGS
+      - name: Persist only live post/reply history
+        if: ${{ vars.DRY_RUN == 'false' || steps.mode.outputs.live == 'true' }}
+        shell: bash
+        run: |
+          if git diff --quiet -- data/history.json; then exit 0; fi
+          git config user.name "threads-life-bot[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history.json
+          git commit -m "chore: record published Threads activity"
+          git push
