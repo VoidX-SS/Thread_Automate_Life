@@ -38,6 +38,8 @@ jobs:
       REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '3' }}
       TOPIC_SEED: ${{ vars.TOPIC_SEED || 'campus life, late homework, friendship, rainy evenings, cheap meals' }}
       TREND_HINT: ${{ vars.TREND_HINT || '' }}
+      ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'false' }}
+      TREND_RSS_URL: ${{ vars.TREND_RSS_URL || 'https://trends.google.com/trending/rss?geo=VN' }}
     steps:
       - uses: actions/checkout@v5
         with:
