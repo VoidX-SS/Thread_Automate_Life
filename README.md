@@ -9,7 +9,7 @@ A small GitHub Actions bot for a **clearly fictional** Vietnamese Gen Z Threads 
 - Uses the official Threads API's two-step text-post flow: create a container, then publish it.
 - Retains the last 200 actual posts in `data/history.json` to avoid repeats.
 - Has an optional reply scan. It only reads replies under this account's own recorded posts, skips sensitive comments, replies at most 3 times/day, and is disabled by default.
-- Runs post generation at **19:15 Vietnam time on Tuesday, Thursday, Sunday**. The reply scan is scheduled daily at 19:45 but is inert until `ENABLE_REPLIES=true`.
+- Runs post generation **twice a day at 11:45 and 20:00 Vietnam time**. The reply scan is scheduled daily at 20:30 but is inert until `ENABLE_REPLIES=true`.
 
 It intentionally does **not** scrape arbitrary people's content, impersonate a real student, claim trends are facts, or autonomously argue in political/medical/legal/financial discussions. Put a clear disclosure such as `Nhân vật hư cấu · bài viết có hỗ trợ AI` in the account bio.
 

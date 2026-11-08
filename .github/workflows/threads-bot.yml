@@ -2,10 +2,12 @@ name: Threads life bot
 
 on:
   schedule:
-    # 19:15 Asia/Ho_Chi_Minh every Tue, Thu, Sun (UTC+7, no DST).
-    - cron: "15 12 * * 0,2,4"
-    # Optional reply scan at 19:45 Asia/Ho_Chi_Minh every day.
-    - cron: "45 12 * * *"
+    # 11:45 Asia/Ho_Chi_Minh every day (04:45 UTC) - Post 1 (lunch break)
+    - cron: "45 4 * * *"
+    # 20:00 Asia/Ho_Chi_Minh every day (13:00 UTC) - Post 2 (prime evening)
+    - cron: "0 13 * * *"
+    # Optional reply scan at 20:30 Asia/Ho_Chi_Minh every day (13:30 UTC).
+    - cron: "30 13 * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -54,11 +56,11 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
             echo "live=${{ inputs.live }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "15 12 * * 0,2,4" ]; then
-            echo "mode=post" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "30 13 * * *" ]; then
+            echo "mode=reply" >> "$GITHUB_OUTPUT"
             echo "live=false" >> "$GITHUB_OUTPUT"
           else
-            echo "mode=reply" >> "$GITHUB_OUTPUT"
+            echo "mode=post" >> "$GITHUB_OUTPUT"
             echo "live=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Run bot

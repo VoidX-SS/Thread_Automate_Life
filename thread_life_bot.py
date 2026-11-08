@@ -20,6 +20,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
 HISTORY_PATH = DATA / "history.json"

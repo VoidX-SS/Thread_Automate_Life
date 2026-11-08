@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and secrets
+.env
+*.local
+
+# Local run outputs
+data/last_run.json
