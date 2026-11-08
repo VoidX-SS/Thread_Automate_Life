@@ -16,6 +16,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
@@ -96,6 +97,15 @@ def http_json(url: str, *, method: str = "GET", headers: dict[str, str] | None =
         raise RuntimeError(f"Network error: {exc.reason}") from exc
 
 
+def http_text(url: str) -> str:
+    request = urllib.request.Request(url, headers={"User-Agent": "ThreadAutomateLife/0.1"})
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            return response.read().decode("utf-8", errors="replace")
+    except (urllib.error.HTTPError, urllib.error.URLError) as exc:
+        raise RuntimeError(f"Trend feed unavailable: {exc}") from exc
+
+
 def gemini(prompt: str) -> str:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -142,8 +152,26 @@ def valid_post(text: str, history: list[dict[str, Any]]) -> bool:
             and not re.search(r"https?://|@\w+", text) and not too_similar(text, history))
 
 
+def trend_hint() -> str:
+    """Read a public trend signal, never a factual source, only when enabled."""
+    manual = os.getenv("TREND_HINT", "").strip()
+    if manual:
+        return manual[:140]
+    if not env_bool("ENABLE_TREND_FEED"):
+        return ""
+    feed_url = os.getenv("TREND_RSS_URL", "https://trends.google.com/trending/rss?geo=VN")
+    try:
+        root = ET.fromstring(http_text(feed_url))
+        candidates = [node.text.strip() for node in root.findall(".//item/title") if node.text]
+        clean = [x for x in candidates if not (SENSITIVE.search(x) or UNSAFE_POST.search(x))]
+        return ", ".join(clean[:2])[:140]
+    except (RuntimeError, ET.ParseError) as exc:
+        print(f"Trend feed ignored: {exc}", file=sys.stderr)
+        return ""
+
+
 def generate_post(history: list[dict[str, Any]]) -> tuple[str, str]:
-    hint = os.getenv("TREND_HINT", "").strip()
+    hint = trend_hint()
     topic_seed = os.getenv("TOPIC_SEED", "campus life, deadlines, rainy evenings, friends, money-saving meals")
     instruction = SYSTEM_PROMPT + "\nPossible everyday themes: " + topic_seed
     if hint:
