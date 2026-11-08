@@ -44,7 +44,9 @@ Open **Settings → Secrets and variables → Actions** in this repository.
 | `ENABLE_REPLIES` | `false` | Enables tightly limited replies to replies on your own posts only. |
 | `REPLY_DAILY_CAP` | `3` | Hard-capped to 5 in code. |
 | `TOPIC_SEED` | `campus life, late homework...` | Everyday topics the persona may draw from. |
-| `TREND_HINT` | empty | Optional **manually curated**, non-factual cultural mood. Example: `cuối kỳ, ảnh tốt nghiệp`. Do not paste headlines. |
+| `TREND_HINT` | empty | Optional **manually curated**, non-factual cultural mood. It takes priority over the feed. Example: `cuối kỳ, ảnh tốt nghiệp`. Do not paste headlines. |
+| `ENABLE_TREND_FEED` | `false` | When `true`, reads Google Trends Vietnam's public RSS as a *signal* only. It does not turn a trend into a claimed fact or headline. |
+| `TREND_RSS_URL` | Google Trends Vietnam RSS | Override only with a source you have permission to fetch and use. |
 
 ## Meta Threads setup, including finding an old app
 
@@ -93,4 +95,4 @@ flowchart TD
 - Use a separate fictional account, a disclosure in its bio, and a recognizable profile name/avatar.
 - Read and follow the current Meta Platform Terms and Threads API policies. Do not use it to simulate a real person or conceal automated activity.
 - Start with `ENABLE_REPLIES=false` for at least a week. Review outputs and error logs before enabling it.
-- Keep `TREND_HINT` empty until you have a source-and-review workflow. This MVP treats all lifestyle content as creative writing, not information.
+- Keep `ENABLE_TREND_FEED=false` during the first week. A trend is only a cultural signal, not a verified fact. This MVP deliberately treats lifestyle content as creative writing, not information.
