@@ -17,6 +17,12 @@ def review(cid, **changes):
             "scores": {"hook": 4, "voice": 4, "payoff": 4, "conversation": 3}, **changes}
 
 class EditorialTests(unittest.TestCase):
+    def test_voice_references_cannot_be_republished_as_generated_content(self):
+        model = Mock(return_value={"candidates": [{"id": "c1", "text": e.STYLE_REFERENCES[0]}]})
+        out = e.compose([], model, seed="reference-copy")
+        self.assertEqual(out["source"], "curated_reserve")
+        self.assertIn("copied_source", out["audit"]["rejections"][0]["reasons"])
+
     def test_short_casual_voice_and_all_reserves(self):
         c = e.config()
         self.assertEqual(e.gate("ê tui đang đợi bạn. bạn đang đợi tui nhắn là đã tới.", [], c), [])

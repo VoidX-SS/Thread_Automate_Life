@@ -17,6 +17,24 @@ from typing import Any, Callable
 
 CONFIG_PATH = Path(__file__).resolve().parent / "config" / "persona.json"
 
+# Original voice references, separate from the publishable reserve pool.
+# A matching span is rejected just like a copy of an external source.
+STYLE_REFERENCES = [
+    "tui không ghét dọn phòng. tui ghét khúc phát hiện mọi thứ chưa có chỗ để cất.",
+    "đi ăn nhóm 4 người: 3 người bảo ăn gì cũng được, người còn lại được tuyển làm trưởng phòng quyết định.",
+    "t vừa gõ tới rồi xong mới bắt đầu tìm chìa khoá. thấy bản thân có tố chất viết truyện."
+]
+
+STYLE_NOTE = """\nMẪU GIỌNG TỰ BIÊN SOẠN: chỉ học độ trực tiếp và nhịp câu, không mượn ý/câu chốt.
+""" + json.dumps(STYLE_REFERENCES, ensure_ascii=False) + """
+Viết như điều vừa nảy ra để gửi vào group chat. Không cố nghe thông minh bằng danh từ khoa học,
+thuật ngữ nhân sự hoặc một ẩn dụ gượng. Được cường điệu nhưng liên tưởng phải hiểu được ngay.
+ĐỪNG VIẾT: 'Đồ màu sáng sinh ra để thử thách độ khéo léo của người có hệ tiêu hóa hậu đậu.'
+Lý do: hệ tiêu hóa không thực hiện hành vi làm đổ đồ ăn; câu dài giải thích lại cảnh trước mà không
+thêm một cú chốt. Cũng tránh mẫu 'X sinh ra để thử thách Y' lặp máy móc.
+Nếu một câu đã đủ vui thì dừng; không gắn thêm câu thứ hai để chứng minh nó vui.
+"""
+
 WRITER_RULES = """Bạn viết Threads tiếng Việt cho nhân vật hư cấu, không đóng vai tác giả ngoài đời.
 Hãy nghĩ ý trước, rồi mới nghĩ từ: MỘT quan sát cụ thể + MỘT điểm rơi. Câu đầu đi thẳng vào
 mâu thuẫn/chi tiết đáng chú ý. Đọc lại thành tiếng: nếu giống caption quảng cáo hay bài tập làm văn,
@@ -268,7 +286,7 @@ def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str,
             seed: str = "", offline: bool = False, topic_seed: str = "") -> dict[str, Any]:
     cfg = config()
     trends = trends or []
-    source_texts = [str(x.get("text", "")) for x in trends]
+    source_texts = [str(x.get("text", "")) for x in trends] + STYLE_REFERENCES
     recent = post_history(history)[-20:]
     audit: dict[str, Any] = {"candidate_count": 0, "rejections": [], "errors": []}
     if offline:
@@ -281,7 +299,7 @@ def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str,
             "trend_observations": trends, "optional_topic_seed": topic_seed[:300],
             "evidence": performance_context(history, metrics or {})}
     try:
-        raw = model_json(WRITER_RULES + "\nDATA_JSON\n" + json.dumps(data, ensure_ascii=False))
+        raw = model_json(WRITER_RULES + STYLE_NOTE + "\nDATA_JSON\n" + json.dumps(data, ensure_ascii=False))
         candidates = raw.get("candidates", [])
         if not isinstance(candidates, list):
             raise ValueError("candidate list missing")
@@ -310,6 +328,11 @@ def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str,
         edit_data = {"candidates": eligible, "briefs": briefs,
                      "history": data["history"], "source_snippets": source_texts}
         edited = model_json(EDITOR_RULES + "\nReject candidates that do not match their assigned topic and format."
+                            + "\nSemantic check: a metaphor must connect the right subject and action. "
+                            "For example, a clumsy digestive system spilling food is incoherent. "
+                            "A second sentence merely explaining the first joke has no new payoff. "
+                            "In either case set approve=false, not a generous score. "
+                            "Check chat-like phrasing by reading it aloud; do not reward strained cleverness."
                             + "\nDATA_JSON\n" + json.dumps(edit_data, ensure_ascii=False))
         reviews = edited.get("reviews", [])
         if not isinstance(reviews, list):
