@@ -59,5 +59,22 @@
     "trend_source_counts": {},
     "post_id": "18108130601366213",
     "id": "18108130601366213"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-11T20:01:30.281267+00:00",
+    "slot": "2026-11-12:am",
+    "id": "18132041524837356",
+    "text": "Đứa nào cũng bảo ăn gì cũng được xong chê 7749 món tui gợi ý. Nuốt không khí sống hả? =))",
+    "topic": "food",
+    "format": "tiny_story",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "18132041524837356"
   }
 ]
