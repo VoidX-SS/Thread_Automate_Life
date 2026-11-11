@@ -94,6 +94,7 @@ Tùy trạng thái app và tài khoản sử dụng, Meta có thể yêu cầu r
 ## Kiểm chứng trên GitHub
 
 - Workflow **Test and preview content** chạy unit tests, preview offline, rồi gọi Gemini ở main bằng key đã có. Job này không nhận Threads token và không đăng.
+- CI bật `CONTENT_DEBUG=true` để xem các draft đã qua bộ lọc và nhận xét của editor. Workflow đăng định kỳ không tự bật chế độ debug này.
 - Workflow chính chạy tests trước mỗi lượt; preview/audit ở artifact `threads-run-...` trong 14 ngày.
 - `source=gemini_editor` nghĩa là đã qua writer + editor; `curated_reserve` nghĩa là câu dự phòng. Đừng coi CI xanh mà reserve xuất hiện là đã xác nhận Gemini hoạt động.
 - `data/history.json` chỉ lưu hành động đã đăng; không bị sửa bởi preview. Cấu trúc cũ vẫn đọc được.

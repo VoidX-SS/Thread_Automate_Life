@@ -82,3 +82,13 @@ Cơ chế từ chối tin bịa, vu khống/xúc phạm, công khai đời tư, 
 Bộ lọc keyword không thể hiểu mọi tiếng lóng/ẩn ý; editor cũng có thể sai. Chọn vùng nội dung ít rủi ro thay vì gắn nhãn “hư cấu” rồi coi mọi drama đều được phép. Nếu có sự cố, đặt DRY_RUN=true qua repository variables, gỡ hoặc sửa bài cụ thể và kiểm tra nguyên nhân.
 
 Giữ nguyên history, cron người dùng đã đặt, helper lấy token và secrets. Không đăng bài mới chỉ để demo trong lượt nâng cấp này.
+
+## 9. Kết quả kiểm chứng bản nâng cấp
+
+[GitHub Actions run 43002414509](https://github.com/VoidX-SS/Thread_Automate_Life/actions/runs/43002414509) đã hoàn tất thành công: 24 unit/integration tests, preview offline, và preview bằng Gemini key đang cấu hình trong repository. Lượt thật tạo đủ 6 phương án, có phương án bị bộ lọc/biên tập từ chối; phương án được chọn có source=gemini_editor, không phải reserve, audit không có lỗi provider.
+
+Một câu được chọn trong preview: “mua cái áo khoác nhìn trên ảnh tưởng vibe lãng tử Hàn Quốc. mặc lên người trông như cái bao tải đựng khoai tây biết đi.” Câu này được ghi để đối chiếu đầu ra thực; không phải bài đã đăng, không phải bằng chứng viral, và điểm 80 là điểm rubric nội bộ.
+
+Preview ban đầu có một ví von gượng nhưng editor vẫn chấm đạt. Đã sửa lại hướng dẫn về tính hợp lý của liên tưởng và câu chốt, thêm mẫu giọng tự biên soạn có chặn sao chép. Đây cũng là bằng chứng editor tự động còn có thể bỏ sót. CI bật CONTENT_DEBUG để thấy các draft đã qua bộ lọc cùng nhận xét biên tập, giúp chủ kênh kiểm tra lựa chọn thay vì chỉ nhìn một con số.
+
+Chưa kiểm chứng bằng dữ liệu mới sau đăng; chưa xác nhận token hiện có đủ scope insights/keyword search. Các luồng đó đã được test bằng API giả lập, còn preview trên GitHub cố ý không nhận Threads token hoặc bật nguồn trend. Không tuyên bố đã thử live những phần chưa có bằng chứng.
