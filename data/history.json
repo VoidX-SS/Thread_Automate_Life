@@ -43,5 +43,21 @@
     "theme": "fallback everyday life",
     "post_id": "18024094403949695",
     "id": "18024094403949695"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-11T12:09:10.611034+00:00",
+    "slot": "2026-11-11:pm",
+    "topic": "digital",
+    "format": "playful_ranking",
+    "text": "độ dũng cảm của tui:\nnhắn trong group: 9/10\nbấm gọi: 2/10\nnghe máy số lạ: máy đang ở đâu ta",
+    "source": "curated_reserve",
+    "engine_version": "2.1",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "post_id": "18108130601366213",
+    "id": "18108130601366213"
   }
 ]
