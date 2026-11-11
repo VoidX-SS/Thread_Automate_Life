@@ -29,9 +29,8 @@ STYLE_NOTE = """\nMẪU GIỌNG TỰ BIÊN SOẠN: chỉ học độ trực ti�
 """ + json.dumps(STYLE_REFERENCES, ensure_ascii=False) + """
 Viết như điều vừa nảy ra để gửi vào group chat. Không cố nghe thông minh bằng danh từ khoa học,
 thuật ngữ nhân sự hoặc một ẩn dụ gượng. Được cường điệu nhưng liên tưởng phải hiểu được ngay.
-ĐỪNG VIẾT: 'Đồ màu sáng sinh ra để thử thách độ khéo léo của người có hệ tiêu hóa hậu đậu.'
-Lý do: hệ tiêu hóa không thực hiện hành vi làm đổ đồ ăn; câu dài giải thích lại cảnh trước mà không
-thêm một cú chốt. Cũng tránh mẫu 'X sinh ra để thử thách Y' lặp máy móc.
+Không tự thêm một cơ quan cơ thể, danh từ khoa học hay chức danh chỉ để tạo vẻ có punchline.
+Một câu cuối chỉ diễn giải lại cảnh trước chưa phải một cú chốt mới.
 Nếu một câu đã đủ vui thì dừng; không gắn thêm câu thứ hai để chứng minh nó vui.
 """
 
@@ -283,7 +282,7 @@ def reserve_post(history: list[dict[str, Any]], cfg: dict[str, Any], seed: str,
 
 def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str, Any]], *,
             trends: list[dict[str, Any]] | None = None, metrics: dict[str, Any] | None = None,
-            seed: str = "", offline: bool = False, topic_seed: str = "") -> dict[str, Any]:
+            seed: str = "", offline: bool = False, topic_seed: str = "", debug: bool = False) -> dict[str, Any]:
     cfg = config()
     trends = trends or []
     source_texts = [str(x.get("text", "")) for x in trends] + STYLE_REFERENCES
@@ -323,13 +322,15 @@ def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str,
             else:
                 eligible.append({"id": cid, "text": text, "topic": brief["topic"], "format": brief["format"]})
         audit["candidate_count"] = len(seen)
+        if debug:
+            audit["drafts"] = eligible
         if not eligible:
             return reserve_post(history, cfg, seed, audit)
         edit_data = {"candidates": eligible, "briefs": briefs,
                      "history": data["history"], "source_snippets": source_texts}
         edited = model_json(EDITOR_RULES + "\nReject candidates that do not match their assigned topic and format."
                             + "\nSemantic check: a metaphor must connect the right subject and action. "
-                            "For example, a clumsy digestive system spilling food is incoherent. "
+                            "Avoid gratuitous scientific or anatomical metaphors. "
                             "A second sentence merely explaining the first joke has no new payoff. "
                             "In either case set approve=false, not a generous score. "
                             "Check chat-like phrasing by reading it aloud; do not reward strained cleverness."
@@ -340,6 +341,10 @@ def compose(history: list[dict[str, Any]], model_json: Callable[[str], dict[str,
         counts = Counter(r.get("id") for r in reviews if isinstance(r, dict) and isinstance(r.get("id"), str))
         judged = {r["id"]: r for r in reviews if isinstance(r, dict) and isinstance(r.get("id"), str)
                   and counts[r["id"]] == 1}
+        if debug:
+            audit["editor_reviews"] = [{"id": cid, "score": review_score(row),
+                                         "reason": str(row.get("reason", ""))[:180]}
+                                        for cid, row in judged.items()]
         selected = []
         for item in eligible:
             review = judged.get(item["id"], {})

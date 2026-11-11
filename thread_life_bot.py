@@ -299,7 +299,7 @@ def run_post(dry_run: bool, *, offline: bool = False, now: dt.datetime | None = 
     signals, errors = trend_signals(now, slot, offline=offline)
     chosen = engine.compose(history, model_json, trends=signals,
                             metrics=load_json(METRICS_PATH, {}), seed=slot, offline=offline,
-                            topic_seed=os.getenv("TOPIC_SEED", ""))
+                            topic_seed=os.getenv("TOPIC_SEED", ""), debug=env_bool("CONTENT_DEBUG"))
     run.update(chosen)
     run["trend_source_counts"] = dict(Counter(x["source"] for x in signals))
     run.setdefault("audit", {}).setdefault("errors", []).extend(errors)
