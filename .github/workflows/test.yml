@@ -1,0 +1,44 @@
+name: Test and preview content
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*.py"
+      - "config/**"
+      - ".github/workflows/test.yml"
+  pull_request:
+    paths:
+      - "*.py"
+      - "config/**"
+      - ".github/workflows/test.yml"
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest -v
+      - name: Offline smoke preview
+        run: python thread_life_bot.py --offline
+      - name: Preview with configured Gemini key on main
+        if: github.event_name == 'push'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+          DRY_RUN: "true"
+          ENABLE_TREND_FEED: "false"
+          ENABLE_THREADS_TRENDS: "false"
+        # No Threads access token is provided to this job.
+        run: python thread_life_bot.py --dry-run
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: composer-preview-${{ github.run_id }}
+          path: data/last_run.json
+          if-no-files-found: ignore
+          retention-days: 14

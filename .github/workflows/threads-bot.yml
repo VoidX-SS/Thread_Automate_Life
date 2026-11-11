@@ -2,12 +2,10 @@ name: Threads life bot
 
 on:
   schedule:
-    # 11:45 Asia/Ho_Chi_Minh every day (04:45 UTC) - Post 1 (lunch break)
-    - cron: "45 4 * * *"
-    # 20:00 Asia/Ho_Chi_Minh every day (13:00 UTC) - Post 2 (prime evening)
-    - cron: "0 13 * * *"
-    # Optional reply scan at 20:30 Asia/Ho_Chi_Minh every day (13:30 UTC).
-    - cron: "30 13 * * *"
+    # Nominal Vietnam time; GitHub may delay scheduled runs.
+    - cron: "45 4 * * *"   # 11:45 Asia/Ho_Chi_Minh
+    - cron: "0 13 * * *"   # 20:00 Asia/Ho_Chi_Minh
+    - cron: "30 13 * * *"  # 20:30 reply scan + optional insights
   workflow_dispatch:
     inputs:
       mode:
@@ -15,9 +13,9 @@ on:
         required: true
         default: "post"
         type: choice
-        options: [post, reply]
+        options: [post, reply, insights]
       live:
-        description: "Post live (only after you finish setup)"
+        description: "Publish live; false always forces a preview"
         required: true
         default: false
         type: boolean
@@ -25,12 +23,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: threads-life-bot
+  cancel-in-progress: false
+
 jobs:
   run:
     runs-on: ubuntu-latest
-    concurrency:
-      group: threads-life-bot
-      cancel-in-progress: false
+    timeout-minutes: 8
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
@@ -38,10 +38,12 @@ jobs:
       DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
       ENABLE_REPLIES: ${{ vars.ENABLE_REPLIES || 'false' }}
       REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '3' }}
-      TOPIC_SEED: ${{ vars.TOPIC_SEED || 'campus life, late homework, friendship, rainy evenings, cheap meals' }}
+      TOPIC_SEED: ${{ vars.TOPIC_SEED || '' }}
       TREND_HINT: ${{ vars.TREND_HINT || '' }}
-      ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'false' }}
+      ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'true' }}
       TREND_RSS_URL: ${{ vars.TREND_RSS_URL || 'https://trends.google.com/trending/rss?geo=VN' }}
+      ENABLE_THREADS_TRENDS: ${{ vars.ENABLE_THREADS_TRENDS || 'false' }}
+      ENABLE_INSIGHTS: ${{ vars.ENABLE_INSIGHTS || 'false' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -49,32 +51,52 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Choose scheduled mode
-        id: mode
-        shell: bash
+      - name: Choose mode and force preview for manual live=false
+        id: settings
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_LIVE: ${{ inputs.live }}
+          SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
-            echo "live=${{ inputs.live }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "30 13 * * *" ]; then
-            echo "mode=reply" >> "$GITHUB_OUTPUT"
-            echo "live=false" >> "$GITHUB_OUTPUT"
+          MODE=post
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            MODE="$INPUT_MODE"
+            if [ "$INPUT_LIVE" = "true" ]; then LIVE=true; else LIVE=false; fi
           else
-            echo "mode=post" >> "$GITHUB_OUTPUT"
-            echo "live=false" >> "$GITHUB_OUTPUT"
+            if [ "$SCHEDULE" = "30 13 * * *" ]; then MODE=reply; fi
+            if [ "$DRY_RUN" = "false" ]; then LIVE=true; else LIVE=false; fi
           fi
-      - name: Run bot
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "live=$LIVE" >> "$GITHUB_OUTPUT"
+      - name: Test before running
+        run: python -m unittest -q
+      - name: Run composer or responder
+        env:
+          RUN_MODE: ${{ steps.settings.outputs.mode }}
+          RUN_LIVE: ${{ steps.settings.outputs.live }}
         run: |
-          ARGS="--mode ${{ steps.mode.outputs.mode }}"
-          if [ "${{ steps.mode.outputs.live }}" = "true" ]; then ARGS="$ARGS --live"; fi
-          python thread_life_bot.py $ARGS
-      - name: Persist only live post/reply history
-        if: ${{ vars.DRY_RUN == 'false' || steps.mode.outputs.live == 'true' }}
-        shell: bash
+          if [ "$RUN_LIVE" = "true" ]; then
+            python thread_life_bot.py --mode "$RUN_MODE" --live
+          else
+            python thread_life_bot.py --mode "$RUN_MODE" --dry-run
+          fi
+      - name: Persist published activity and optional insights
+        if: ${{ always() && steps.settings.outputs.live == 'true' }}
         run: |
-          if git diff --quiet -- data/history.json; then exit 0; fi
           git config user.name "threads-life-bot[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/history.json
-          git commit -m "chore: record published Threads activity"
+          if [ -f data/metrics.json ]; then git add data/metrics.json; fi
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: record Threads activity and observed insights"
           git push
+      - name: Save preview and decision audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: threads-run-${{ github.run_id }}
+          path: data/last_run.json
+          if-no-files-found: ignore
+          retention-days: 14
+
