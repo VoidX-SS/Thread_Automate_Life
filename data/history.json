@@ -76,5 +76,22 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "18132041524837356"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-12T13:14:43.720675+00:00",
+    "slot": "2026-11-12:pm",
+    "id": "17904854589373566",
+    "text": "Trọ chung 4 đứa mà rác để đùn như núi bảo chờ tuần sau dọn. Ủa tự đổ hả? :)",
+    "topic": "campus",
+    "format": "tiny_story",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "17904854589373566"
   }
 ]
