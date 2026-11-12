@@ -93,5 +93,22 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "17904854589373566"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-12T20:39:29.826007+00:00",
+    "slot": "2026-11-13:am",
+    "id": "17893632099454821",
+    "text": "First date đòi chở đi ăn quán sang xong đến lúc thanh toán kêu quên ví ở nhà. Diễn viên xuất sắc ghê!",
+    "topic": "dating",
+    "format": "tiny_story",
+    "source": "gemini_editor",
+    "editor_score": 94,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "17893632099454821"
   }
 ]
