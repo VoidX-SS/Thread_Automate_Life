@@ -110,5 +110,22 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "17893632099454821"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-13T12:36:35.905904+00:00",
+    "slot": "2026-11-13:pm",
+    "id": "18164241541446162",
+    "text": "Seen tin nhắn tui từ sáng tới tối nhưng story mới đăng vẫn thấy tim hồng. Bận dữ chưa anh ơi? =)))",
+    "topic": "digital",
+    "format": "chat_scene",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "18164241541446162"
   }
 ]
