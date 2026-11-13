@@ -127,5 +127,24 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "18164241541446162"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-13T20:21:00.544640+00:00",
+    "slot": "2026-11-14:am",
+    "id": "18499808656108945",
+    "text": "Bảo 'tui ăn gì cũng được' mà kể ra mười món chê cả mười. Nuốt không khí sống hả? =))",
+    "topic": "food",
+    "format": "one_liner",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": true,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {
+      "google_trends_vn": 1
+    },
+    "post_id": "18499808656108945"
   }
 ]
