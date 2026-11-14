@@ -146,5 +146,22 @@
       "google_trends_vn": 1
     },
     "post_id": "18499808656108945"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-14T11:44:28.745689+00:00",
+    "slot": "2026-11-14:pm",
+    "id": "18354769111267426",
+    "text": "First date chê quán bình dân chê luôn trà đá vỉa học xong bắt tui trả tiền. Ủa alo?",
+    "topic": "dating",
+    "format": "specific_question",
+    "source": "gemini_editor",
+    "editor_score": 82,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "18354769111267426"
   }
 ]
