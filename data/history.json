@@ -163,5 +163,22 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "18354769111267426"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-16T13:07:56.394760+00:00",
+    "slot": "2026-11-16:pm",
+    "id": "17910873072329625",
+    "text": "Nhắn tin mượn tiền xong seen không thèm đáp nhưng vẫn lướt tóp tóp suốt ngày. Ai giải thích hộ?",
+    "topic": "digital",
+    "format": "specific_question",
+    "source": "gemini_editor",
+    "editor_score": 94,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "17910873072329625"
   }
 ]
