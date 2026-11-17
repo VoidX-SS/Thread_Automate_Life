@@ -199,5 +199,22 @@
       "google_trends_vn": 1
     },
     "post_id": "18065105246562601"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-17T13:50:09.293841+00:00",
+    "slot": "2026-11-17:pm",
+    "id": "17982706607916001",
+    "text": "Hẹn hò lần đầu mà cứ chê bai quán xá quê mùa rồi bắt tui chịu hết hóa đơn. Ủa alo?",
+    "topic": "dating",
+    "format": "one_liner",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "17982706607916001"
   }
 ]
