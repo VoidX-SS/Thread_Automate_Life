@@ -235,5 +235,24 @@
       "google_trends_vn": 2
     },
     "post_id": "18345772894275508"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-18T13:25:11.085843+00:00",
+    "slot": "2026-11-18:pm",
+    "id": "18350880979248082",
+    "text": "Sếp giao task gấp lúc 11 giờ đêm xong bảo 'làm lấy kinh nghiệm nha em'. Nuốt không khí sống hả? =))",
+    "topic": "adulting",
+    "format": "playful_ranking",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": true,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {
+      "google_trends_vn": 1
+    },
+    "post_id": "18350880979248082"
   }
 ]
