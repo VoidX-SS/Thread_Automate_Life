@@ -254,5 +254,22 @@
       "google_trends_vn": 1
     },
     "post_id": "18350880979248082"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-18T21:06:53.013058+00:00",
+    "slot": "2026-11-19:am",
+    "id": "18441782770197916",
+    "text": "First date đòi đi ăn nhà hàng sang trọng xong kêu quên ví. Diễn viên Oscar năm nay chắc luôn hả? =))",
+    "topic": "dating",
+    "format": "soft_opinion",
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "18441782770197916"
   }
 ]
