@@ -271,5 +271,22 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "18441782770197916"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-19T13:52:46.086620+00:00",
+    "slot": "2026-11-19:pm",
+    "id": "18109146323358631",
+    "text": "Mẹ bắt chỉ cách dùng Zalo lần thứ 800 trong ngày. Muốn trầm cảm ngang ghê á!",
+    "topic": "family",
+    "format": "one_liner",
+    "source": "gemini_editor",
+    "editor_score": 92,
+    "engine_version": "2.1",
+    "trend_context_present": false,
+    "trend_note": "exposed_to_observations_not_proof_of_a_trend",
+    "trend_source_counts": {},
+    "post_id": "18109146323358631"
   }
 ]
