@@ -699,7 +699,7 @@ def run_refresh_token(dry_run: bool) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("post", "reply", "insights", "refresh-token"), default="post")
+    parser.add_argument("--mode", choices=("auto", "post", "reply", "insights", "refresh-token"), default="post")
     switch = parser.add_mutually_exclusive_group()
     switch.add_argument("--live", action="store_true")
     switch.add_argument("--dry-run", action="store_true", help="Force preview even if DRY_RUN=false")
@@ -708,7 +708,12 @@ def main() -> int:
     if args.offline and (args.live or args.mode != "post"):
         parser.error("--offline is only valid for post previews")
     dry_run = True if args.dry_run or args.offline else False if args.live else env_bool("DRY_RUN", True)
-    if args.mode == "post":
+    if args.mode == "auto":
+        post_run = run_post(dry_run, offline=args.offline)
+        reply_run = run_replies(dry_run)
+        run = {"mode": "auto", "dry_run": dry_run, "post": post_run, "reply": reply_run}
+        save_json(RUN_LOG_PATH, run)
+    elif args.mode == "post":
         run = run_post(dry_run, offline=args.offline)
     elif args.mode == "reply":
         run = run_replies(dry_run)
