@@ -1,15 +1,17 @@
-name: Test and preview content
+name: Test and preview content (v3)
 on:
   push:
     branches: [main]
     paths:
       - "*.py"
       - "config/**"
+      - "data/seed_bank.json"
       - ".github/workflows/test.yml"
   pull_request:
     paths:
       - "*.py"
       - "config/**"
+      - "data/seed_bank.json"
       - ".github/workflows/test.yml"
 permissions:
   contents: read
@@ -25,16 +27,17 @@ jobs:
       - run: python -m unittest -v
       - name: Offline smoke preview
         run: python thread_life_bot.py --offline
-      - name: Preview with configured Gemini key on main
+      - name: Preview with workhorse model on main (saves Flagship 20/day quota)
         if: github.event_name == 'push'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+          GEMINI_FLAGSHIP_MODEL: ${{ vars.GEMINI_FLAGSHIP_MODEL || 'gemini-4-hydrogen' }}
+          GEMINI_WORKHORSE_MODEL: ${{ vars.GEMINI_WORKHORSE_MODEL || vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+          ALLOW_FLAGSHIP_IN_DRY_RUN: "false"
           DRY_RUN: "true"
           CONTENT_DEBUG: "true"
           ENABLE_TREND_FEED: "false"
           ENABLE_THREADS_TRENDS: "false"
-        # No Threads access token is provided to this job.
         run: python thread_life_bot.py --dry-run
       - uses: actions/upload-artifact@v4
         if: always()

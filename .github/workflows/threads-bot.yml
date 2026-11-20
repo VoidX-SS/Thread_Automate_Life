@@ -1,11 +1,12 @@
-name: Threads life bot
+name: Threads Psychology & Philosophy Bot (v3)
 
 on:
   schedule:
-    # Nominal Vietnam time; GitHub may delay scheduled runs.
-    - cron: "45 4 * * *"   # 11:45 Asia/Ho_Chi_Minh
-    - cron: "0 13 * * *"   # 20:00 Asia/Ho_Chi_Minh
-    - cron: "30 13 * * *"  # 20:30 reply scan + optional insights
+    # Nominal Vietnam time (UTC+7); GitHub may delay scheduled runs.
+    - cron: "45 4 * * *"   # 11:45 VN - Post slot AM
+    - cron: "30 5 * * *"   # 12:30 VN - Midday reply scan + insights
+    - cron: "0 13 * * *"   # 20:00 VN - Post slot PM
+    - cron: "30 13 * * *"  # 20:30 VN - Evening reply scan + insights
   workflow_dispatch:
     inputs:
       mode:
@@ -33,17 +34,21 @@ jobs:
     timeout-minutes: 8
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+      GEMINI_FLAGSHIP_MODEL: ${{ vars.GEMINI_FLAGSHIP_MODEL || 'gemini-4-hydrogen' }}
+      GEMINI_WORKHORSE_MODEL: ${{ vars.GEMINI_WORKHORSE_MODEL || vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+      FLAGSHIP_DAILY_CAP: ${{ vars.FLAGSHIP_DAILY_CAP || '20' }}
+      FLAGSHIP_LIVE_RESERVE: ${{ vars.FLAGSHIP_LIVE_RESERVE || '6' }}
+      ALLOW_FLAGSHIP_IN_DRY_RUN: ${{ vars.ALLOW_FLAGSHIP_IN_DRY_RUN || 'true' }}
       THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
       DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
       ENABLE_REPLIES: ${{ vars.ENABLE_REPLIES || 'false' }}
-      REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '3' }}
+      REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '5' }}
       TOPIC_SEED: ${{ vars.TOPIC_SEED || '' }}
       TREND_HINT: ${{ vars.TREND_HINT || '' }}
-      ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'true' }}
-      TREND_RSS_URL: ${{ vars.TREND_RSS_URL || 'https://trends.google.com/trending/rss?geo=VN' }}
+      ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'false' }}
       ENABLE_THREADS_TRENDS: ${{ vars.ENABLE_THREADS_TRENDS || 'false' }}
       ENABLE_INSIGHTS: ${{ vars.ENABLE_INSIGHTS || 'false' }}
+      CONTENT_DEBUG: ${{ vars.CONTENT_DEBUG || 'false' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -64,7 +69,7 @@ jobs:
             MODE="$INPUT_MODE"
             if [ "$INPUT_LIVE" = "true" ]; then LIVE=true; else LIVE=false; fi
           else
-            if [ "$SCHEDULE" = "30 13 * * *" ]; then MODE=reply; fi
+            if [ "$SCHEDULE" = "30 5 * * *" ] || [ "$SCHEDULE" = "30 13 * * *" ]; then MODE=reply; fi
             if [ "$DRY_RUN" = "false" ]; then LIVE=true; else LIVE=false; fi
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
@@ -81,15 +86,16 @@ jobs:
           else
             python thread_life_bot.py --mode "$RUN_MODE" --dry-run
           fi
-      - name: Persist published activity and optional insights
+      - name: Persist activity, metrics and daily model quota
         if: ${{ always() && steps.settings.outputs.live == 'true' }}
         run: |
           git config user.name "threads-life-bot[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/history.json
+          if [ -f data/history.json ]; then git add data/history.json; fi
           if [ -f data/metrics.json ]; then git add data/metrics.json; fi
+          if [ -f data/quota.json ]; then git add data/quota.json; fi
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "chore: record Threads activity and observed insights"
+          git commit -m "chore: record Threads v3 activity, insights, and model quota"
           git push
       - name: Save preview and decision audit
         if: always()
@@ -99,4 +105,3 @@ jobs:
           path: data/last_run.json
           if-no-files-found: ignore
           retention-days: 14
-

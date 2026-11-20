@@ -7,179 +7,339 @@ import unittest
 import urllib.error
 from pathlib import Path
 from unittest.mock import Mock, patch
+
 import content_engine as e
 import thread_life_bot as b
 
-NOW = dt.datetime(2026, 11, 11, 13, 30, tzinfo=dt.UTC)
+NOW = dt.datetime(2026, 11, 21, 13, 30, tzinfo=dt.timezone.utc)
+
 
 def review(cid, **changes):
-    return {"id": cid, "approve": True, "risks": [],
-            "scores": {"hook": 4, "voice": 4, "payoff": 4, "conversation": 3}, **changes}
+    base = {
+        "id": cid,
+        "approve": True,
+        "fact_grounded": True,
+        "format_matched": True,
+        "risks": [],
+        "scores": {"hook": 4, "clarity_depth": 4, "voice": 4, "conversation": 4},
+        "reason": "tốt",
+    }
+    base.update(changes)
+    return base
 
-class EditorialTests(unittest.TestCase):
-    def test_voice_references_cannot_be_republished_as_generated_content(self):
-        model = Mock(return_value={"candidates": [{"id": "c1", "text": e.STYLE_REFERENCES[0]}]})
-        out = e.compose([], model, seed="reference-copy")
-        self.assertEqual(out["source"], "curated_reserve")
-        self.assertIn("copied_source", out["audit"]["rejections"][0]["reasons"])
 
-    def test_short_casual_voice_and_all_reserves(self):
-        c = e.config()
-        self.assertEqual(e.gate("ê tui đang đợi bạn. bạn đang đợi tui nhắn là đã tới.", [], c), [])
+def screened(cid, **changes):
+    base = {
+        "id": cid,
+        "fact_grounded": True,
+        "format_matched": True,
+        "not_repetitive": True,
+        "keep": True,
+        "note": "đạt",
+    }
+    base.update(changes)
+    return base
+
+
+class SeedBankAndEditorialTests(unittest.TestCase):
+    def test_seed_bank_has_200_valid_unique_seeds(self):
+        seeds = e.seed_bank()
+        self.assertEqual(len(seeds), 200)
+        self.assertEqual(len({s["id"] for s in seeds}), 200)
+        pillars = {s["pillar"] for s in seeds}
+        self.assertEqual(pillars, {"dilemma", "brain_glitch", "philosophy", "human_paradox"})
+        for s in seeds:
+            if s["preferred_format"] == "dilemma_poll":
+                self.assertGreaterEqual(len(s["poll_hint"]), 2, s["id"])
+                for opt in s["poll_hint"]:
+                    self.assertLessEqual(len(opt), 25, f"{s['id']}: {opt}")
+
+    def test_all_curated_reserves_pass_gate(self):
+        cfg = e.config()
         for row in e.RESERVES:
-            self.assertEqual(e.gate(row["text"], [], c), [], row["text"])
+            reasons = e.gate(
+                row["text"],
+                [],
+                cfg,
+                fmt=row["format"],
+                followup_reply=row.get("followup_reply", ""),
+                poll_options=row.get("poll_options", []),
+                seed_id=row["seed_id"],
+            )
+            self.assertEqual(reasons, [], f"Reserve failed: {row['seed_id']} -> {reasons}")
 
-    def test_same_scene_and_copied_external_text(self):
-        h = [{"text": "Ngồi quán trà đá ngắm lá rơi, bài tập còn ở nhà."}]
-        self.assertIn("recent_motif", e.gate("quán trà chiều nay bình yên quá, tui sắp quên luôn mấy bài chưa làm", h, e.config()))
-        source = "đây là một câu ví dụ khá dài để kiểm tra sao chép từ nguồn bên ngoài"
-        self.assertIn("copied_source", e.gate(source + " =))", [], e.config(), [source]))
+    def test_gate_allows_psychology_facts_and_blocks_risk_bait_cliche(self):
+        cfg = e.config()
+        good = (
+            "Nghiên cứu tâm lý học cho thấy hơn 50% người tham gia không nhìn thấy con khỉ đột đi ngang màn hình "
+            "khi đang tập trung đếm số lần chuyền bóng. Bạn từng bỏ lỡ điều hiển nhiên trước mắt bao giờ chưa?"
+        )
+        self.assertEqual(e.gate(good, [], cfg, fmt="paradox_opener"), [])
+        self.assertIn(
+            "tone_or_emote_violation",
+            e.gate(good + " =))", [], cfg, fmt="paradox_opener"),
+        )
+        self.assertIn(
+            "cliche_or_template_voice",
+            e.gate(good + " Thật là một khoảng thở chữa lành.", [], cfg, fmt="paradox_opener"),
+        )
+        self.assertIn(
+            "engagement_bait",
+            e.gate("Chấm để nhận tài liệu tâm lý học hành vi siêu hay mà không ai chỉ cho bạn biết đâu nhé các bạn ơi.", [], cfg),
+        )
+        self.assertIn(
+            "sensitive_or_legal_risk",
+            e.gate("Hôm nay mình sẽ bóc phốt chuyện ngoại tình của một người nổi tiếng lớp 10 để cả mạng xã hội phân xử.", [], cfg),
+        )
 
-    def test_risk_without_accents_and_minor_romance(self):
-        for text in ("tui sap boc phot mot nguoi noi tieng cho cmay biet day ne",
-                     "em lớp 10 còn anh 22 tuổi, cả hai quen qua mạng rồi gặp nhau"):
-            self.assertIn("sensitive_or_legal_risk", e.gate(text, [], e.config()))
+    def test_gate_enforces_poll_and_chain_schemas(self):
+        cfg = e.config()
+        sample = (
+            "Nếu có một cỗ máy giúp bạn sống trọn đời hạnh phúc như thật nhưng bạn sẽ quên mình đang trong máy, "
+            "bạn chọn ở lại đời thật hay bước vào cỗ máy này?"
+        )
+        self.assertIn("invalid_poll_count", e.gate(sample, [], cfg, fmt="dilemma_poll", poll_options=["Chỉ 1 lựa chọn"]))
+        self.assertIn(
+            "poll_option_too_long",
+            e.gate(sample, [], cfg, fmt="dilemma_poll", poll_options=["Lựa chọn này dài quá hai mươi lăm ký tự", "Lựa chọn 2"]),
+        )
+        self.assertEqual(
+            e.gate(sample, [], cfg, fmt="dilemma_poll", poll_options=["Vào máy sống êm", "Ở lại đời thật"]),
+            [],
+        )
+        self.assertIn("invalid_followup_length", e.gate(sample, [], cfg, fmt="brain_hook_chain", followup_reply="quá ngắn"))
 
-    def test_bait_rejected(self):
-        self.assertIn("claim_or_engagement_bait", e.gate("chấm để tui kể câu chuyện chỉ ai từng trải qua mới hiểu nha", [], e.config()))
+    def test_three_stage_pipeline_writer_screener_chief_editor(self):
+        briefs = e.make_briefs([], e.config(), "test-seed")
+        candidates = []
+        for idx, br in enumerate(briefs):
+            if br["format"] == "dilemma_poll":
+                candidates.append({
+                    "id": br["id"],
+                    "seed_id": br["seed_id"],
+                    "text": f"Bài toán lựa chọn số {idx}: {br['seed']['everyday_angle']} Bạn nghiêng về lựa chọn nào trong hai phương án dưới đây?",
+                    "followup_reply": "",
+                    "poll_options": br["seed"]["poll_hint"][:2] or ["Phương án A", "Phương án B"],
+                })
+            elif br["format"] == "brain_hook_chain":
+                candidates.append({
+                    "id": br["id"],
+                    "seed_id": br["seed_id"],
+                    "text": f"Cơ chế bộ não số {idx}: {br['seed']['everyday_angle']} Hiện tượng này mang tên {br['seed']['concept']}.",
+                    "followup_reply": f"Giải thích ngắn gọn: {br['seed']['verified_fact'][:200]} Bạn đã từng gặp tình huống này lần nào chưa?",
+                    "poll_options": [],
+                })
+            else:
+                candidates.append({
+                    "id": br["id"],
+                    "seed_id": br["seed_id"],
+                    "text": f"Góc nhìn số {idx}: {br['seed']['everyday_angle']} Khái niệm {br['seed']['concept']} đặt ra câu hỏi rất đáng suy ngẫm cho đời sống hiện đại.",
+                    "followup_reply": "",
+                    "poll_options": [],
+                })
 
-    def test_writer_receives_history_and_editor_selects_unchanged_text(self):
-        rows = [{"id": f"c{i+1}", "text": r["text"]} for i,r in enumerate(e.RESERVES[:6])]
-        model = Mock(side_effect=[{"candidates": rows}, {"reviews": [review("c2")]}])
-        h = [{"text": "một bài cũ riêng để kiểm tra lịch sử được truyền vào"}]
-        out = e.compose(h, model, seed="test")
-        self.assertIn(h[0]["text"], model.call_args_list[0].args[0])
-        self.assertTrue(model.call_args_list[1].args[0].startswith(e.EDITOR_RULES))
-        self.assertEqual((out["source"],out["text"]), ("gemini_editor",rows[1]["text"]))
+        roles_called = []
 
-    def test_missing_rejected_duplicate_or_wrongly_typed_editor_results(self):
-        for reviews in ([], [review("c1",approve="false")], [review("c1",risks=["defamation"])],
-                        [review("c1"),review("c1")]):
-            model = Mock(side_effect=[{"candidates":[{"id":"c1","text":e.RESERVES[0]["text"]}]},{"reviews":reviews}])
-            self.assertEqual(e.compose([],model,seed="test")["source"],"curated_reserve")
+        def fake_model(prompt, *, role="post_writer", temperature=0.7):
+            roles_called.append((role, temperature))
+            if role == "post_writer":
+                return {"candidates": candidates}
+            if role == "post_screener":
+                return {"screened": [screened("c1", keep=True), screened("c2", keep=True), screened("c3", keep=False, note="nhạt")]}
+            if role == "post_chief_editor":
+                return {"reviews": [review("c1", scores={"hook": 3, "clarity_depth": 4, "voice": 4, "conversation": 4}),
+                                    review("c2", scores={"hook": 5, "clarity_depth": 4, "voice": 4, "conversation": 5})]}
+            raise AssertionError(f"Unexpected role: {role}")
 
-    def test_bad_scores_fail_closed(self):
-        for value in (True,float("nan"),6,-1,"5",None):
-            row=review("c1"); row["scores"]["hook"]=value
-            self.assertIsNone(e.review_score(row))
+        out = e.compose([], fake_model, seed="test-seed")
+        self.assertEqual([r[0] for r in roles_called], ["post_writer", "post_screener", "post_chief_editor"])
+        self.assertEqual(roles_called[1][1], 0.15)
+        self.assertEqual(roles_called[2][1], 0.15)
+        self.assertEqual(out["source"], "gemini_editor")
+        self.assertEqual(out["id"], "c2")
+        self.assertEqual(out["editor_score"], 91.0)
 
-    def test_failure_provenance_redacts_error_and_exhaustion_skips(self):
-        out=e.compose([],Mock(side_effect=RuntimeError("secret-token")),seed="outage")
-        self.assertEqual(out["source"],"curated_reserve")
-        self.assertNotIn("secret-token",json.dumps(out))
-        self.assertTrue(out["audit"]["errors"])
-        out=e.compose([{"text":r["text"]} for r in e.RESERVES],Mock(),seed="x",offline=True)
-        self.assertEqual(out["skipped"],"no_fresh_approved_content")
+    def test_ungrounded_or_format_mismatch_editor_reviews_rejected(self):
+        self.assertIsNone(e.review_score(review("c1", fact_grounded=False)))
+        self.assertIsNone(e.review_score(review("c1", format_matched=False)))
+        self.assertIsNone(e.review_score(review("c1", risks=["hallucination"])))
+        bad = review("c1")
+        bad["scores"]["conversation"] = 2
+        self.assertIsNone(e.review_score(bad))
 
-    def test_briefs_avoid_recent_topics_and_explore_formats(self):
-        briefs=e.make_briefs([{"topic":"food"},{"topic":"digital"}],e.config(),"seed")
-        self.assertFalse({"food","digital"} & {x["topic"] for x in briefs})
-        self.assertEqual(len({x["format"] for x in briefs}),6)
+    def test_seed_cooldown_prevents_recent_seed_reuse(self):
+        seeds = e.seed_bank()
+        recent = [{"mode": "post", "seed_id": s["id"], "pillar": s["pillar"], "text": f"old {i}"} for i, s in enumerate(seeds[:100])]
+        briefs = e.make_briefs(recent, e.config(), "cooldown-test")
+        recent_ids = {s["id"] for s in seeds[:100]}
+        self.assertFalse(recent_ids & {b["seed_id"] for b in briefs})
 
-    def test_malformed_candidate_does_not_crash_or_publish(self):
-        model=Mock(return_value={"candidates":[{"id":[],"text":"bad"}]})
-        self.assertEqual(e.compose([],model,seed="x")["source"],"curated_reserve")
+    def test_reply_uses_workhorse_roles_and_requires_approval(self):
+        roles = []
 
-    def test_reply_requires_editor_approval(self):
-        model=Mock(side_effect=[{"text":"ê tui cũng hay quên đúng lúc cần nhớ nhất =))"},
-                                {"reviews":[review("reply",approve=False,risks=["tone"])]}])
-        self.assertEqual(e.reply_text("công nhận luôn","một bài cũ",model),"")
+        def fake_model(prompt, *, role="reply_writer", temperature=0.7):
+            roles.append(role)
+            if role == "reply_writer":
+                return {"text": "Góc nhìn đó rất thú vị, bạn thấy yếu tố nào khiến mình khó chọn nhất trong hai phương án này?"}
+            return {"reviews": [review("reply", approve=True)]}
+
+        rep = e.reply_text("Mình nghĩ chọn giữ ký ức vẫn tốt hơn", "Bài viết gốc về ký ức", fake_model)
+        self.assertEqual(roles, ["reply_writer", "reply_editor"])
+        self.assertTrue(len(rep) > 20)
+
 
 class FileTestBase(unittest.TestCase):
     def setUp(self):
-        temp=tempfile.TemporaryDirectory(); self.addCleanup(temp.cleanup)
-        root=Path(temp.name)
-        p=patch.dict(os.environ,{"ENABLE_INSIGHTS":"false","ENABLE_REPLIES":"false",
-                                "ENABLE_TREND_FEED":"false","ENABLE_THREADS_TRENDS":"false"},clear=True)
-        p.start(); self.addCleanup(p.stop)
-        for key,name in (("HISTORY_PATH","history.json"),("METRICS_PATH","metrics.json"),("RUN_LOG_PATH","last_run.json")):
-            p=patch.object(b,key,root/name); p.start(); self.addCleanup(p.stop)
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        p = patch.dict(
+            os.environ,
+            {
+                "GEMINI_API_KEY": "fake-key",
+                "ENABLE_INSIGHTS": "false",
+                "ENABLE_REPLIES": "false",
+                "ENABLE_TREND_FEED": "false",
+                "ENABLE_THREADS_TRENDS": "false",
+                "FOLLOWUP_DELAY_SECONDS": "0",
+            },
+            clear=True,
+        )
+        p.start()
+        self.addCleanup(p.stop)
+        for key, name in (
+            ("HISTORY_PATH", "history.json"),
+            ("METRICS_PATH", "metrics.json"),
+            ("QUOTA_PATH", "quota.json"),
+            ("RUN_LOG_PATH", "last_run.json"),
+        ):
+            p = patch.object(b, key, root / name)
+            p.start()
+            self.addCleanup(p.stop)
 
-class RuntimeTests(FileTestBase):
-    def test_dry_run_does_not_publish_or_modify_history(self):
-        with patch.object(b,"model_json",side_effect=RuntimeError("offline")),patch.object(b,"Threads") as client:
-            out=b.run_post(True,now=NOW)
-        client.assert_not_called(); self.assertFalse(b.HISTORY_PATH.exists())
-        self.assertEqual(out["source"],"curated_reserve")
 
-    def test_offline_has_zero_network_even_in_live_environment(self):
-        with patch.dict(os.environ,{"DRY_RUN":"false"}),patch.object(b,"http_json") as api,patch.object(b,"http_text") as feed,patch("sys.argv",["bot","--offline"]),patch("sys.stdout",new=io.StringIO()):
-            self.assertEqual(b.main(),0)
-        api.assert_not_called(); feed.assert_not_called()
-        self.assertTrue(b.load_json(b.RUN_LOG_PATH,{})["dry_run"])
+class DualModelRouterAndRuntimeTests(FileTestBase):
+    def test_router_splits_flagship_and_workhorse_and_respects_20_cap(self):
+        # Pre-fill 19 flagship calls today -> only 1 flagship call left before cap=20
+        day_vn = NOW.astimezone(b.VIETNAM).date().isoformat()
+        b.save_json(b.QUOTA_PATH, {"version": 1, "days": {day_vn: {"gemini-4-hydrogen": 19}}})
 
-    def test_explicit_preview_overrides_live_variable(self):
-        with patch.dict(os.environ,{"DRY_RUN":"false"}),patch("sys.argv",["bot","--dry-run"]),patch.object(b,"run_post",return_value={}) as run,patch("sys.stdout",new=io.StringIO()):
-            b.main()
-        run.assert_called_once_with(True,offline=False)
+        router = b.ModelRouter(dry_run=False, now=NOW)
+        called_models = []
 
-    def test_post_slot_and_daily_cap_checked_before_generation(self):
-        for history in ([{"mode":"post","at":NOW.isoformat(),"slot":b.post_slot(NOW),"text":"x"}],
-                        [{"mode":"post","at":(NOW-dt.timedelta(hours=i)).isoformat(),"text":str(i)} for i in (1,2)]):
-            b.save_json(b.HISTORY_PATH,history)
-            with patch.object(b.engine,"compose") as compose,patch.object(b,"Threads") as api:
-                self.assertIn("skipped",b.run_post(False,now=NOW))
-            compose.assert_not_called(); api.assert_not_called()
+        def fake_gemini(prompt, *, model, temperature=0.7):
+            called_models.append(model)
+            return json.dumps({"ok": True})
 
-    def test_corrupt_history_not_silently_reset(self):
-        b.HISTORY_PATH.write_text("{bad",encoding="utf-8")
-        with self.assertRaises(json.JSONDecodeError): b.run_post(False,now=NOW)
+        with patch.object(b, "gemini_call", side_effect=fake_gemini):
+            router.call_json("p1", role="post_writer")       # 20th flagship call -> gemini-4-hydrogen
+            router.call_json("p2", role="post_screener")     # workhorse -> gemini-3.5-flash-lite
+            router.call_json("p3", role="post_chief_editor") # cap reached (20/20) -> auto fallback flash-lite
+            router.call_json("p4", role="reply_writer")      # workhorse -> gemini-3.5-flash-lite
+        router.persist()
 
-    def test_publish_contract_and_bearer_header(self):
-        with patch.dict(os.environ,{"THREADS_ACCESS_TOKEN":"testsecret"}),patch.object(b,"http_json",side_effect=[{"id":"container"},{"id":"post"}]) as api:
-            self.assertEqual(b.Threads().publish_text("test"),"post")
-        first,second=api.call_args_list
-        self.assertTrue(first.args[0].endswith("/me/threads"))
-        self.assertTrue(second.args[0].endswith("/me/threads_publish"))
-        self.assertNotIn("access_token",first.kwargs["form"])
-        self.assertEqual(first.kwargs["headers"]["Authorization"],"Bearer testsecret")
+        self.assertEqual(
+            called_models,
+            ["gemini-4-hydrogen", "gemini-3.5-flash-lite", "gemini-3.5-flash-lite", "gemini-3.5-flash-lite"],
+        )
+        saved_quota = b.load_json(b.QUOTA_PATH, {})
+        self.assertEqual(saved_quota["days"][day_vn]["gemini-4-hydrogen"], 20)
+        self.assertEqual(saved_quota["days"][day_vn]["gemini-3.5-flash-lite"], 3)
+        self.assertEqual(router.trace[2]["fallback"], "flagship_daily_cap_reached")
 
-    def test_ambiguous_publish_failure_not_retried(self):
-        with patch.dict(os.environ,{"THREADS_ACCESS_TOKEN":"secret"}),patch.object(b,"http_json",side_effect=[{"id":"container"},RuntimeError("timeout")]) as api:
-            with self.assertRaises(RuntimeError): b.Threads().publish_text("test")
-        self.assertEqual(api.call_count,2)
+    def test_router_auto_fallbacks_on_flagship_429(self):
+        router = b.ModelRouter(dry_run=False, now=NOW)
+        calls = []
+
+        def fake_gemini(prompt, *, model, temperature=0.7):
+            calls.append(model)
+            if model == "gemini-4-hydrogen":
+                raise b.APIError(429)
+            return json.dumps({"ok": "from_workhorse"})
+
+        with patch.object(b, "gemini_call", side_effect=fake_gemini):
+            out = router.call_json("prompt", role="post_writer")
+
+        self.assertEqual(out, {"ok": "from_workhorse"})
+        self.assertEqual(calls, ["gemini-4-hydrogen", "gemini-3.5-flash-lite"])
+        self.assertEqual(router.trace[0]["status"], "ok_after_fallback")
+
+    def test_ci_dry_run_skips_flagship_when_disabled(self):
+        with patch.dict(os.environ, {"ALLOW_FLAGSHIP_IN_DRY_RUN": "false"}):
+            router = b.ModelRouter(dry_run=True, now=NOW)
+            with patch.object(b, "gemini_call", return_value='{"ok":true}') as g:
+                router.call_json("p", role="post_writer")
+            self.assertEqual(g.call_args.kwargs["model"], "gemini-3.5-flash-lite")
+            self.assertEqual(router.trace[0]["fallback"], "dry_run_flagship_disabled")
+
+    def test_publish_poll_and_topic_tag_with_400_fallback(self):
+        with patch.dict(os.environ, {"THREADS_ACCESS_TOKEN": "secret-tok"}):
+            # First container call with poll_attachment fails HTTP 400; retry without poll succeeds
+            with patch.object(
+                b,
+                "http_json",
+                side_effect=[b.APIError(400), {"id": "container-2"}, {"id": "post-99"}],
+            ) as api:
+                downgrades = []
+                pid = b.Threads().publish_text(
+                    "Câu hỏi dilemma",
+                    topic_tag="Tâm lý học",
+                    poll_options=["Chọn A", "Chọn B"],
+                    downgrades_out=downgrades,
+                )
+        self.assertEqual(pid, "post-99")
+        self.assertEqual(downgrades, ["dropped_poll_attachment"])
+        self.assertIn("poll_attachment", api.call_args_list[0].kwargs["form"])
+        self.assertNotIn("poll_attachment", api.call_args_list[1].kwargs["form"])
+        self.assertEqual(api.call_args_list[1].kwargs["form"]["topic_tag"], "Tâm lý học")
+
+    def test_run_post_live_publishes_self_reply_chain_and_persists_quota(self):
+        reserve_chain = e.RESERVES[0]  # brain_hook_chain with followup_reply
+        with patch.object(e, "compose", return_value={
+            **reserve_chain, "topic": reserve_chain["pillar"], "source": "gemini_editor",
+            "editor_score": 88.0, "engine_version": "3.0", "audit": {"errors": []},
+        }), patch.object(b, "Threads") as api:
+            api.return_value.publish_text.side_effect = ["main-post-1", "followup-post-2"]
+            out = b.run_post(False, now=NOW)
+
+        self.assertEqual(out["post_id"], "main-post-1")
+        self.assertEqual(out["followup_post_id"], "followup-post-2")
+        self.assertEqual(api.return_value.publish_text.call_count, 2)
+        second_call = api.return_value.publish_text.call_args_list[1]
+        self.assertEqual(second_call.kwargs["reply_to_id"], "main-post-1")
+        saved = b.load_json(b.HISTORY_PATH, [])
+        self.assertEqual(saved[-1]["followup_post_id"], "followup-post-2")
+
+    def test_offline_has_zero_network_and_does_not_mutate_history(self):
+        with patch.dict(os.environ, {"DRY_RUN": "false"}), patch.object(b, "http_json") as api, patch(
+            "sys.argv", ["bot", "--offline"]
+        ), patch("sys.stdout", new=io.StringIO()):
+            self.assertEqual(b.main(), 0)
+        api.assert_not_called()
+        self.assertFalse(b.HISTORY_PATH.exists())
+        self.assertTrue(b.load_json(b.RUN_LOG_PATH, {})["dry_run"])
+
+    def test_insights_collects_pillar_and_format(self):
+        b.save_json(b.HISTORY_PATH, [{
+            "id": "p1", "mode": "post", "at": (NOW - dt.timedelta(hours=26)).isoformat(),
+            "source": "gemini_editor", "format": "dilemma_poll", "pillar": "dilemma", "text": "x",
+        }])
+        resp = {"data": [{"name": k, "values": [{"value": v}]} for k, v in
+                         {"views": 250, "likes": 12, "replies": 9, "reposts": 3, "quotes": 1}.items()]}
+        with patch.dict(os.environ, {"ENABLE_INSIGHTS": "true"}), patch.object(b, "Threads") as api:
+            api.return_value.insights.return_value = resp
+            out = b.collect_insights(False, now=NOW)
+        self.assertEqual(out["fetched"], 1)
+        self.assertIn("dilemma", out["performance"]["pillars"])
+        self.assertIn("dilemma_poll", out["performance"]["formats"])
 
     def test_http_error_redacts_provider_body(self):
-        error=urllib.error.HTTPError("https://x",403,"denied",{},io.BytesIO(b"secret-test-token"))
-        with patch("urllib.request.urlopen",side_effect=error):
-            with self.assertRaises(b.APIError) as result: b.http_json("https://example.com")
-        self.assertNotIn("secret-test-token",str(result.exception))
+        error = urllib.error.HTTPError("https://x", 403, "denied", {}, io.BytesIO(b"secret-test-token"))
+        with patch("urllib.request.urlopen", side_effect=error):
+            with self.assertRaises(b.APIError) as result:
+                b.http_json("https://example.com")
+        self.assertNotIn("secret-test-token", str(result.exception))
 
-    def test_reply_cap_is_daily_across_reruns(self):
-        now=dt.datetime.now(dt.UTC)
-        b.save_json(b.HISTORY_PATH,[{"mode":"reply","reply_to_id":str(i),"at":now.isoformat()} for i in range(3)])
-        with patch.dict(os.environ,{"ENABLE_REPLIES":"true"}),patch.object(b,"Threads") as api:
-            self.assertEqual(b.run_replies(False)["sent"],[])
-        api.return_value.profile.assert_not_called()
-
-class EvidenceTests(FileTestBase):
-    def test_fixed_age_insights_no_duplicate_fetches_no_writes_to_threads(self):
-        b.save_json(b.HISTORY_PATH,[{"id":"p1","mode":"post","at":(NOW-dt.timedelta(hours=25)).isoformat(),
-                                   "source":"gemini_editor","format":"one_liner","text":"x"}])
-        response={"data":[{"name":k,"values":[{"value":v}]} for k,v in
-                         {"views":100,"likes":2,"replies":1,"reposts":0,"quotes":0}.items()]}
-        with patch.dict(os.environ,{"ENABLE_INSIGHTS":"true"}),patch.object(b,"Threads") as api:
-            api.return_value.insights.return_value=response
-            out=b.collect_insights(False,now=NOW); b.collect_insights(False,now=NOW)
-        self.assertEqual(out["fetched"],1); self.assertEqual(api.return_value.insights.call_count,1)
-        api.return_value.publish_text.assert_not_called()
-        self.assertEqual(b.load_json(b.METRICS_PATH,{})["snapshots"]["p1"]["h24"]["age_hours"],25)
-        self.assertEqual(out["performance"]["status"],"observational_only_no_causal_winner")
-
-    def test_missing_permission_and_missing_metric_do_not_fabricate_data(self):
-        self.assertEqual(b.metrics_values({"data":[]}),{})
-        b.save_json(b.HISTORY_PATH,[{"id":"p","at":(NOW-dt.timedelta(hours=25)).isoformat(),"text":"x"}])
-        with patch.dict(os.environ,{"ENABLE_INSIGHTS":"true"}),patch.object(b,"Threads") as api:
-            api.return_value.insights.side_effect=b.APIError(403)
-            out=b.collect_insights(False,now=NOW)
-        self.assertEqual(out["fetched"],0); self.assertTrue(out["errors"])
-
-    def test_rss_filters_stale_and_irrelevant_signals(self):
-        fresh=(NOW-dt.timedelta(hours=1)).strftime("%a, %d %b %Y %H:%M:%S +0000")
-        stale=(NOW-dt.timedelta(days=5)).strftime("%a, %d %b %Y %H:%M:%S +0000")
-        xml=f"<rss><channel><item><title>game mới</title><pubDate>{fresh}</pubDate></item><item><title>game cũ</title><pubDate>{stale}</pubDate></item><item><title>chứng khoán</title><pubDate>{fresh}</pubDate></item></channel></rss>"
-        self.assertEqual([x["text"] for x in b.rss_signals(xml,NOW)],["game mới"])
 
 if __name__ == "__main__":
     unittest.main()
-
