@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "snapshots": {
+    "18065105246562601": {
+      "h72": {
+        "views": 23,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-20T21:23:35.002825+00:00",
+        "age_hours": 94.64,
+        "source": "threads_api",
+        "format": "soft_opinion",
+        "pillar": "legacy"
+      }
+    }
+  }
+}
