@@ -288,5 +288,60 @@
     "trend_note": "exposed_to_observations_not_proof_of_a_trend",
     "trend_source_counts": {},
     "post_id": "18109146323358631"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-20T20:56:28.597473+00:00",
+    "slot": "2026-11-21:am",
+    "id": "17954936535049572",
+    "seed_id": "brn_022_cocktail_party_effect",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "brain_hook_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Giữa phòng ồn ào, não bộ vẫn âm thầm quét nền âm thanh và kéo chú ý sang ngay khi có ai nhắc tên bạn.\n\nĐó là hiệu ứng Tiệc Cocktail năm 1953.",
+    "followup_reply": "Colin Cherry phát hiện tai bạn vẫn ghi nhận nhiều hơn rất nhiều so với những gì ý thức cho phép lọt vào ở tầng vô thức.\n\nBạn từng giật mình vì nghe thấy tên mình ở bàn bên cạnh chưa?",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 80,
+    "engine_version": "3.0",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-21",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 4,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP503",
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "status": "failed:JSONDecodeError"
+        },
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP503",
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP503",
+          "status": "ok_after_fallback"
+        }
+      ]
+    },
+    "post_id": "17954936535049572"
   }
 ]
