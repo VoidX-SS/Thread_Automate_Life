@@ -492,5 +492,57 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.0",
     "id": "18394750396229790"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-21T20:37:57.868028+00:00",
+    "slot": "2026-11-22:h03",
+    "id": "18099584453445933",
+    "seed_id": "phi_022_problem_of_induction",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "thought_experiment",
+    "topic_tag": "Triết học",
+    "text": "Con gà tây được người nông dân cho ăn suốt 364 ngày lúc đúng 9 giờ sáng nên kết luận bằng quy nạp rằng con người luôn yêu thương nó, cho đến đúng sáng lễ Tạ ơn.\n\nBertrand Russell dùng câu chuyện này để chỉ ra nghịch lý rằng chuỗi thành công hay sự bình yên kéo dài trong quá khứ không bao giờ tự đảm bảo quy luật đó không thể đảo chiều đột ngột.\n\nBạn đang đặt niềm tin tuyệt đối vào thói quen nào vì nghĩ nó sẽ mãi lặp lại?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 86,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-22",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 8,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18099584453445933"
   }
 ]
