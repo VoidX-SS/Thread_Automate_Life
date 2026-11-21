@@ -269,12 +269,46 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
                 raise b.APIError(429)
             return json.dumps({"ok": "from_workhorse"})
 
-        with patch.object(b, "gemini_call", side_effect=fake_gemini):
+        with patch.dict(os.environ, {"FLAGSHIP_MAX_RETRIES": "2"}), \
+             patch("time.sleep") as mock_sleep, \
+             patch.object(b, "gemini_call", side_effect=fake_gemini):
             out = router.call_json("prompt", role="post_writer")
 
         self.assertEqual(out, {"ok": "from_workhorse"})
-        self.assertEqual(calls, ["gemini-4-hydrogen", "gemini-3.5-flash-lite"])
+        self.assertEqual(calls, ["gemini-4-hydrogen", "gemini-4-hydrogen", "gemini-3.5-flash-lite"])
         self.assertEqual(router.trace[0]["status"], "ok_after_fallback")
+        self.assertEqual(mock_sleep.call_count, 1)
+        # Flagship failed all attempts -> no quota deducted for flagship, 1 for workhorse
+        self.assertEqual(router.flagship_used_today(), 0)
+        self.assertEqual(router.summary()["workhorse_used_today"], 1)
+
+    def test_router_flagship_retries_and_succeeds_without_fallback(self):
+        router = b.ModelRouter(dry_run=False, now=NOW)
+        attempts = 0
+
+        def fake_gemini(prompt, *, model, temperature=0.7):
+            nonlocal attempts
+            attempts += 1
+            if model == "gemini-4-hydrogen" and attempts == 1:
+                raise b.APIError(503)
+            return json.dumps({"ok": "from_flagship"})
+
+        with patch.dict(os.environ, {"FLAGSHIP_MAX_RETRIES": "3"}), \
+             patch("time.sleep") as mock_sleep, \
+             patch.object(b, "gemini_call", side_effect=fake_gemini):
+            out = router.call_json("prompt", role="post_writer")
+
+        self.assertEqual(out, {"ok": "from_flagship"})
+        self.assertEqual(attempts, 2)
+        self.assertEqual(mock_sleep.call_count, 1)
+        # Verify delay is in 10s - 60s
+        sleep_delay = mock_sleep.call_args[0][0]
+        self.assertTrue(10.0 <= sleep_delay <= 60.0)
+        self.assertEqual(router.trace[0]["status"], "ok_attempt_2")
+        self.assertEqual(router.trace[0]["attempts"], 2)
+        # Flagship succeeded on attempt 2 -> 1 quota for flagship, 0 for workhorse
+        self.assertEqual(router.flagship_used_today(), 1)
+        self.assertEqual(router.summary()["workhorse_used_today"], 0)
 
     def test_ci_dry_run_skips_flagship_when_disabled(self):
         with patch.dict(os.environ, {"ALLOW_FLAGSHIP_IN_DRY_RUN": "false"}):

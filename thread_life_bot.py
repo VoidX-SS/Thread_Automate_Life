@@ -264,39 +264,79 @@ class ModelRouter:
 
     def call_json(self, prompt: str, *, role: str = "post_writer", temperature: float = 0.7) -> dict[str, Any]:
         chosen_model, downgrade_reason = self._pick_tier(role)
-        try:
-            self._record_usage(chosen_model)
-            raw = gemini_call(prompt, model=chosen_model, temperature=temperature)
-            parsed = parse_model_json(raw)
-            self.trace.append({
-                "role": role,
-                "model": chosen_model,
-                "fallback": downgrade_reason,
-                "status": "ok",
-            })
-            return parsed
-        except (APIError, RuntimeError, ValueError) as exc:
-            # If flagship fails (quota 429, transient 503, or bad JSON), degrade seamlessly to workhorse
-            if chosen_model == self.flagship and self.workhorse != self.flagship:
-                status = getattr(exc, "status", None)
-                err_tag = f"flagship_error_HTTP{status}" if isinstance(status, int) else f"flagship_error_{type(exc).__name__}"
-                self._record_usage(self.workhorse)
+        is_flagship = (chosen_model == self.flagship)
+        max_attempts = bounded_int("FLAGSHIP_MAX_RETRIES", 4, 1, 10) if is_flagship else 1
+        last_exc: Exception | None = None
+
+        for attempt in range(max_attempts):
+            try:
+                raw = gemini_call(prompt, model=chosen_model, temperature=temperature)
+                parsed = parse_model_json(raw)
+                self._record_usage(chosen_model)
+                status_label = "ok" if attempt == 0 else f"ok_attempt_{attempt + 1}"
+                self.trace.append({
+                    "role": role,
+                    "model": chosen_model,
+                    "fallback": downgrade_reason,
+                    "attempts": attempt + 1,
+                    "status": status_label,
+                })
+                return parsed
+            except (APIError, RuntimeError, ValueError) as exc:
+                last_exc = exc
+                if is_flagship and attempt < max_attempts - 1:
+                    retry_after = getattr(exc, "retry_after", 0) or 0
+                    delay = min(60.0, max(10.0, float(retry_after or (15.0 * (attempt + 1)))))
+                    print(
+                        f"[ModelRouter] Flagship {chosen_model} attempt {attempt + 1}/{max_attempts} failed "
+                        f"({type(exc).__name__}: {exc}). Retrying in {delay:.1f}s...",
+                        flush=True,
+                    )
+                    time.sleep(delay)
+                    continue
+                break
+
+        # If flagship failed all attempts, degrade seamlessly to workhorse
+        if is_flagship and self.workhorse != self.flagship and last_exc is not None:
+            status = getattr(last_exc, "status", None)
+            err_tag = f"flagship_error_HTTP{status}" if isinstance(status, int) else f"flagship_error_{type(last_exc).__name__}"
+            print(
+                f"[ModelRouter] Flagship {chosen_model} exhausted all {max_attempts} attempts. "
+                f"Falling back to workhorse {self.workhorse} ({err_tag})...",
+                flush=True,
+            )
+            try:
                 raw = gemini_call(prompt, model=self.workhorse, temperature=temperature)
                 parsed = parse_model_json(raw)
+                self._record_usage(self.workhorse)
                 self.trace.append({
                     "role": role,
                     "model": self.workhorse,
                     "fallback": err_tag,
+                    "attempts": max_attempts,
                     "status": "ok_after_fallback",
                 })
                 return parsed
+            except (APIError, RuntimeError, ValueError) as workhorse_exc:
+                self.trace.append({
+                    "role": role,
+                    "model": self.workhorse,
+                    "fallback": err_tag,
+                    "attempts": max_attempts,
+                    "status": f"failed:{type(workhorse_exc).__name__}",
+                })
+                raise
+
+        # If non-flagship failed, or workhorse fallback was skipped/failed
+        if last_exc is not None:
             self.trace.append({
                 "role": role,
                 "model": chosen_model,
                 "fallback": downgrade_reason,
-                "status": f"failed:{type(exc).__name__}",
+                "attempts": max_attempts,
+                "status": f"failed:{type(last_exc).__name__}",
             })
-            raise
+            raise last_exc
 
     def summary(self) -> dict[str, Any]:
         return {
