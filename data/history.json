@@ -432,5 +432,65 @@
     },
     "post_id": "18420489100082931",
     "id": "18420489100082931"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-21T18:08:39.952205+00:00",
+    "slot": "2026-11-22:h01",
+    "id": "18089670542709282",
+    "seed_id": "brn_007_l_esprit_de_l_escalier",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "paradox_opener",
+    "topic_tag": "Tâm lý học",
+    "text": "Lúc cãi nhau thì đầu trống rỗng, đến tối đi tắm mới nghĩ ra câu đáp trả sắc sảo. Đó là hiệu ứng 'Trí tuệ cầu thang' do triết gia Denis Diderot đặt tên.\n\nVề mặt thần kinh, khi áp lực xã hội chấm dứt và cơ thể thả lỏng, vỏ não trước trán mới lấy lại đủ tài nguyên để phân tích lại tình huống.\n\nBạn hay tiếc nuối vì phản ứng chậm chạp hay tự hào vì lúc đó đã giữ được bình tĩnh?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 80,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-22",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 3,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18089670542709282"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-21T18:09:44.507592+00:00",
+    "reply_to_id": "18120795220791370",
+    "parent_post_id": "17954936535049572",
+    "text": "Bộ não chúng ta thực sự là một cỗ máy lọc thông tin ngầm đầy tinh vi nhỉ? Bạn nghĩ cơ chế này vô tình hay là một cách sinh tồn âm thầm?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.0",
+    "id": "18394750396229790"
   }
 ]
