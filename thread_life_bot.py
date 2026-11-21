@@ -2,8 +2,8 @@
 """Dependency-free Threads publisher (v3.0) with Seed-Grounded Engine and Dual-Model Routing.
 
 Model routing:
-- Flagship (`gemini-4-hydrogen`, daily cap 20 req/day): post_writer, post_chief_editor.
-- Workhorse (`gemini-3.5-flash-lite`, high quota): post_screener, reply_writer, reply_editor,
+- Flagship (`gemini-4-hydrogen`, daily cap 20 req/day): post_writer.
+- Workhorse (`gemini-3.5-flash-lite`, high quota): post_screener, post_chief_editor, reply_writer, reply_editor,
   CI dry-runs, and automatic fallback whenever flagship hits daily cap or transient errors.
 """
 from __future__ import annotations
@@ -191,7 +191,7 @@ class ModelRouter:
         self.roles = dict(model_cfg.get("roles", {
             "post_writer": "flagship",
             "post_screener": "workhorse",
-            "post_chief_editor": "flagship",
+            "post_chief_editor": "workhorse",
             "reply_writer": "workhorse",
             "reply_editor": "workhorse",
         }))

@@ -22,7 +22,7 @@
     "roles": {
       "post_writer": "flagship",
       "post_screener": "workhorse",
-      "post_chief_editor": "flagship",
+      "post_chief_editor": "workhorse",
       "reply_writer": "workhorse",
       "reply_editor": "workhorse"
     }

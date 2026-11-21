@@ -246,8 +246,8 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
         with patch.object(b, "gemini_call", side_effect=fake_gemini):
             router.call_json("p1", role="post_writer")       # 20th flagship call -> gemini-4-hydrogen
             router.call_json("p2", role="post_screener")     # workhorse -> gemini-3.5-flash-lite
-            router.call_json("p3", role="post_chief_editor") # cap reached (20/20) -> auto fallback flash-lite
-            router.call_json("p4", role="reply_writer")      # workhorse -> gemini-3.5-flash-lite
+            router.call_json("p3", role="post_writer")       # cap reached (20/20) -> auto fallback flash-lite
+            router.call_json("p4", role="post_chief_editor") # workhorse -> gemini-3.5-flash-lite
         router.persist()
 
         self.assertEqual(
