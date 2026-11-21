@@ -91,6 +91,18 @@ class SeedBankAndEditorialTests(unittest.TestCase):
             "sensitive_or_legal_risk",
             e.gate("Hôm nay mình sẽ bóc phốt chuyện ngoại tình của một người nổi tiếng lớp 10 để cả mạng xã hội phân xử.", [], cfg),
         )
+        self.assertIn(
+            "em_dash_forbidden",
+            e.gate(good + " — chi tiết bổ sung.", [], cfg, fmt="paradox_opener"),
+        )
+        self.assertIn(
+            "em_dash_forbidden",
+            e.gate(good + " – chi tiết bổ sung.", [], cfg, fmt="paradox_opener"),
+        )
+        self.assertIn(
+            "excessive_quotes",
+            e.gate(good + ' Đừng để "áp lực", "lo âu" hay "sợ hãi" lấn át.', [], cfg, fmt="paradox_opener"),
+        )
 
     def test_gate_enforces_poll_and_chain_schemas(self):
         cfg = e.config()
