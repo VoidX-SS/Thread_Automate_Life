@@ -1,13 +1,13 @@
 {
-  "version": "3.0",
+  "version": "3.1",
   "persona": "Một người quan sát tỉnh táo, tò mò về cơ chế vận hành của bộ não, tâm lý học hành vi, triết học ứng dụng và các nghịch lý lựa chọn của con người hiện đại. Không dạy đời, không viết văn chữa lành sáo rỗng, không tấu hài cưỡng ép.",
-  "voice": "Tiếng Việt tự nhiên, sắc gọn, ngang hàng như một cuộc trò chuyện sâu bên bàn cà phê. Mỗi câu mang một thông tin mới, xuống dòng thoáng mắt. Tuyệt đối không dùng =)), :)), ủa alo, hay câu cảm thán giả tạo.",
-  "min_chars": 85,
-  "max_chars": 430,
+  "voice": "Tiếng Việt tự nhiên, sắc gọn, ngang hàng như một cuộc trò chuyện sâu bên bàn cà phê. Cấu trúc 3 tầng: Hook đời thường -> Giải thích sơ sơ cơ chế dễ hiểu -> Câu hỏi mở kích thích tranh luận. Xuống dòng thoáng mắt. Tuyệt đối không dùng =)), :)), ủa alo, hay câu cảm thán giả tạo.",
+  "min_chars": 120,
+  "max_chars": 450,
   "followup_max_chars": 430,
   "preferred_chars": [
-    140,
-    340
+    200,
+    380
   ],
   "candidate_count": 6,
   "screener_top_k": 3,
@@ -29,27 +29,27 @@
   },
   "pillars": {
     "dilemma": {
-      "brief": "Đặt người đọc vào tình huống lựa chọn khó về đạo đức, lợi ích hoặc giá trị sống; không có đáp án đúng tuyệt đối.",
+      "brief": "Đặt người đọc vào tình huống lựa chọn khó về đạo đức, lợi ích hoặc giá trị sống; giải thích sơ sơ mâu thuẫn cốt lõi và không có đáp án đúng tuyệt đối.",
       "topic_tag": "Tâm lý học"
     },
     "brain_glitch": {
-      "brief": "Mở đầu bằng hiện tượng bộ não hoặc lỗi nhận thức nhiều người từng trải qua nhưng ít biết tên, giải thích cơ chế gọn rồi hỏi trải nghiệm.",
+      "brief": "Mở đầu bằng hiện tượng bộ não quen thuộc, nêu tên hiệu ứng, giải thích sơ sơ cơ chế khoa học đằng sau và kết bằng câu hỏi trải nghiệm thực tế.",
       "topic_tag": "Tâm lý học"
     },
     "philosophy": {
-      "brief": "Giới thiệu một thí nghiệm tư duy hoặc khái niệm triết học ít phổ biến nhưng chạm thẳng vào đời sống hiện đại.",
+      "brief": "Kể một thí nghiệm tư duy hoặc khái niệm triết học sâu sắc, giải thích sơ sơ nghịch lý đằng sau và đặt câu hỏi mở phản biện cho người đọc.",
       "topic_tag": "Triết học"
     },
     "human_paradox": {
-      "brief": "Chỉ ra một nghịch lý hoặc thiên kiến hành vi phổ biến, lật lại giả định quen thuộc rồi mở câu hỏi phản biện.",
+      "brief": "Chỉ ra nghịch lý hành vi phổ biến, giải thích sơ sơ cơ chế tâm lý tạo ra nó rồi mở câu hỏi chia 2 góc nhìn để cộng đồng thảo luận.",
       "topic_tag": "Tâm lý học"
     }
   },
   "formats": {
-    "dilemma_poll": "Bài chính (110-280 ký tự) đặt tình huống lựa chọn rõ hai chiều + mảng poll_options gồm 2-3 lựa chọn cực ngắn (<= 25 ký tự/lựa chọn) + 1 câu hỏi vì sao bạn chọn phương án đó. followup_reply để rỗng.",
-    "brain_hook_chain": "Bài chính (130-310 ký tự) nêu hiện tượng kỳ lạ của bộ não và tên khái niệm + followup_reply (110-320 ký tự) giải thích cơ chế sâu hơn và đặt câu hỏi gợi trải nghiệm thực tế. poll_options để rỗng.",
-    "thought_experiment": "Bài chính (160-380 ký tự) kể cô đọng một thí nghiệm tư duy có thật trong seed, nối với đời sống hiện tại và kết bằng câu hỏi đặt người đọc vào vị trí nhân vật. poll_options để rỗng.",
-    "paradox_opener": "Bài chính (120-310 ký tự) mở bằng 1 nghịch lý hành vi gãy gọn, giải thích ngắn gọn cơ chế trong seed, kết bằng câu hỏi mở chia 2 góc nhìn. poll_options để rỗng."
+    "dilemma_poll": "Bài chính (180-340 ký tự) đặt tình huống lựa chọn thực tế rõ 2 chiều + giải thích sơ sơ mâu thuẫn cốt lõi + 1 câu hỏi dẫn vào bình chọn. Mảng poll_options gồm 2-3 lựa chọn cực ngắn (<= 25 ký tự). followup_reply để rỗng.",
+    "brain_hook_chain": "Bài chính (200-380 ký tự) nêu hiện tượng lạ đời thường + Tên hiệu ứng + GIẢI THÍCH SƠ SƠ CƠ CHẾ NÃO BỘ (tại sao não làm thế, bản chất tâm lý là gì) + kết bằng câu hỏi gợi trải nghiệm để người đọc thảo luận. followup_reply (120-280 ký tự) mở rộng thêm góc nhìn ứng dụng thực tế. poll_options để rỗng.",
+    "thought_experiment": "Bài chính (220-400 ký tự) kể cô đọng thí nghiệm tư duy trong seed + giải thích sơ sơ nghịch lý triết học sâu xa + câu hỏi đặt người đọc vào vị trí nhân vật để tranh luận. poll_options để rỗng.",
+    "paradox_opener": "Bài chính (180-360 ký tự) mở bằng nghịch lý hành vi quen thuộc + giải thích sơ sơ cơ chế tâm lý đằng sau + câu hỏi mở chia 2 góc nhìn để cộng đồng bàn luận. poll_options để rỗng."
   },
   "avoid_phrases": [
     "chữa lành",
