@@ -300,10 +300,10 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
                     downgrades_out=downgrades,
                 )
         self.assertEqual(pid, "post-99")
-        self.assertEqual(downgrades, ["dropped_poll_attachment"])
+        self.assertTrue(downgrades[0].startswith("dropped_topic_tag_kept_poll"))
         self.assertIn("poll_attachment", api.call_args_list[0].kwargs["form"])
-        self.assertNotIn("poll_attachment", api.call_args_list[1].kwargs["form"])
-        self.assertEqual(api.call_args_list[1].kwargs["form"]["topic_tag"], "Tâm lý học")
+        self.assertIn("poll_attachment", api.call_args_list[1].kwargs["form"])
+        self.assertNotIn("topic_tag", api.call_args_list[1].kwargs["form"])
 
     def test_publish_text_retries_on_readiness_error(self):
         with patch.dict(os.environ, {"THREADS_ACCESS_TOKEN": "secret-tok"}), patch("time.sleep"):
@@ -402,6 +402,33 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
             api.return_value.replies.side_effect = b.APIError(400)
             out = b.run_replies(False, now=NOW)
         self.assertEqual(out.get("sent"), [])
+
+    def test_sanitize_text_normalizes_em_dash_and_spaces(self):
+        raw = "Vế một — vế hai – vế ba  --  vế bốn   kết thúc."
+        cleaned = e.sanitize_text(raw)
+        self.assertNotIn("—", cleaned)
+        self.assertNotIn("–", cleaned)
+        self.assertNotIn("--", cleaned)
+        self.assertEqual(cleaned, "Vế một, vế hai, vế ba, vế bốn kết thúc.")
+
+    def test_gate_allows_concept_single_quotes(self):
+        cfg = e.config()
+        text_with_single_quotes = (
+            "Thí nghiệm 'Mạng che Vô minh': bạn không biết mình sẽ sinh ra 'giàu' hay 'nghèo', 'khỏe' hay 'yếu'. "
+            "Nếu được thiết kế lại luật chơi từ đầu, bạn dám bấm nút thử không?"
+        )
+        self.assertEqual(e.gate(text_with_single_quotes, [], cfg, fmt="thought_experiment"), [])
+
+    def test_gemini_call_raises_on_non_stop_finish_reason(self):
+        resp = {
+            "candidates": [
+                {"finishReason": "MAX_TOKENS", "content": {"parts": [{"text": "truncated"}]}}
+            ]
+        }
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "fake-key"}), patch.object(b, "http_json", return_value=resp):
+            with self.assertRaises(RuntimeError) as ctx:
+                b.gemini_call("prompt", model="gemini-4-hydrogen")
+            self.assertIn("finishReason=MAX_TOKENS", str(ctx.exception))
 
 
 

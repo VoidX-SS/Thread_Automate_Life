@@ -40,7 +40,12 @@ CẤU TRÚC 3 TẦNG BẮT BUỘC CHO MỌI BÀI CHÍNH (ĐỘ DÀI LÝ TƯỞNG
 2. TẦNG 2 - GIẢI THÍCH SƠ SƠ CƠ CHẾ (1-2 câu súc tích): BẮT BUỘC phải giải thích ngắn gọn, dễ hiểu bản chất khoa học / tâm lý đằng sau dựa vào `verified_fact` trong seed.
    * Tuyệt đối KHÔNG ĐƯỢC chỉ thả mỗi cái tên hiệu ứng/khái niệm rồi dừng lại cụt lủn!
    * Phải cho người đọc biết "VÌ SAO não bộ hoặc tâm lý con người lại làm như vậy" (cơ chế dọn RAM, bộ lọc âm chọn lọc, thiên kiến nhận thức...).
-3. TẦNG 3 - BẪY THẢO LUẬN (1 câu kết): Đặt câu hỏi mở gợi chia sẻ trải nghiệm cá nhân, hoặc chia phe tranh luận để người đọc có cớ và động lực nhảy vào bình luận.
+3. TẦNG 3 - MỒI BÌNH LUẬN 3 GIÂY (1 câu kết BẮT BUỘC):
+   - Người đọc chỉ tốn 3 giây để gõ trả lời. CẤM hỏi chung chung kiểu "Bạn nghĩ sao?", "Bạn chọn góc nhìn nào?", hay hỏi kiểu đề thi luận ("Điều đầu tiên bạn muốn sửa trong xã hội là gì?").
+   - Bắt buộc dùng 1 trong 2 kiểu:
+     (a) Ép chọn 1 trong 2 vế rõ ràng (ví dụ: "Nếu vé miễn phí dùng đúng cỗ máy này, bạn dám bước vào hay từ chối?").
+     (b) Hỏi 1 trải nghiệm vi mô ai cũng từng dính (ví dụ: "Bạn có hay bị nghe nhầm ai gọi tên mình giữa chỗ đông người, quay lại thì chẳng có ai không?").
+   - Hạn chế từ Hán-Việt sách vở nặng nề ("sự tiêu vong", "cỗ máy quét nguyên tử", "luật chơi xã hội"); ưu tiên từ ngữ đời thường nói chuyện được ngay.
 
 QUY TẮC VIẾT CHO THREADS:
 - Tiếng Việt hiện đại, tỉnh táo, ngang hàng; chia đoạn xuống dòng thoáng mắt; không giảng đạo, không văn chữa lành, không dùng '=))', ':))', 'ủa alo'.
@@ -290,6 +295,12 @@ def too_similar(text: str, history: list[dict[str, Any]]) -> bool:
     return False
 
 
+def sanitize_text(text: str) -> str:
+    text = re.sub(r"\s*[—–]\s*", ", ", text)
+    text = re.sub(r"\s+--\s+", ", ", text)
+    return re.sub(r"[ \t]{2,}", " ", text).strip()
+
+
 def normalize_poll_options(raw: Any) -> list[str]:
     if not isinstance(raw, list):
         return []
@@ -338,7 +349,7 @@ def gate(
     if "—" in combined or "–" in combined or re.search(r"\s--\s", combined):
         reasons.append("em_dash_forbidden")
     dq_count = combined.count('"') + combined.count('“') + combined.count('”')
-    quoted_phrases = len(re.findall(r'["“\'][^"”\'\n]+["”\']', combined))
+    quoted_phrases = len(re.findall(r'["“][^"”\n]+["”]', combined))
     if dq_count > 4 or quoted_phrases > 2:
         reasons.append("excessive_quotes")
     if not re.search(r"[a-zA-ZÀ-ỹ]", text):
@@ -644,8 +655,8 @@ def compose(
             if not isinstance(candidate.get("text"), str):
                 continue
             brief = by_id[cid]
-            text = candidate["text"].strip()
-            followup = str(candidate.get("followup_reply") or "").strip()
+            text = sanitize_text(candidate["text"])
+            followup = sanitize_text(str(candidate.get("followup_reply") or ""))
             poll_opts = normalize_poll_options(candidate.get("poll_options"))
             reasons = gate(
                 text,
@@ -811,7 +822,7 @@ def reply_text(
         text = out.get("text", "")
         if not isinstance(text, str):
             return ""
-        text = text.strip()
+        text = sanitize_text(text)
         if not text or gate(text, [], cfg, reply=True):
             return ""
         review = _call_model(

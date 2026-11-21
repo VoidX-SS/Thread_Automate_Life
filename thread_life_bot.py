@@ -93,6 +93,7 @@ def http_json(
     headers: dict[str, str] | None = None,
     form: dict[str, str] | None = None,
     body: dict[str, Any] | None = None,
+    timeout: int = 90,
 ) -> dict[str, Any]:
     headers = dict(headers or {})
     data = None
@@ -104,7 +105,7 @@ def http_json(
         headers["Content-Type"] = "application/json"
     request = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(request, timeout=45) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             value = json.loads(response.read().decode("utf-8"))
             if not isinstance(value, dict):
                 raise RuntimeError("API returned a non-object response")
@@ -168,7 +169,7 @@ def gemini_call(prompt: str, *, model: str, temperature: float = 0.7) -> str:
         "generationConfig": {
             "temperature": temperature,
             "responseMimeType": "application/json",
-            "maxOutputTokens": 4096,
+            "maxOutputTokens": 8192,
         },
     }
     for attempt in range(2):
@@ -181,8 +182,9 @@ def gemini_call(prompt: str, *, model: str, temperature: float = 0.7) -> str:
             time.sleep(max(2, exc.retry_after))
     try:
         candidate = response["candidates"][0]
-        if candidate.get("finishReason") not in {None, "STOP"}:
-            raise RuntimeError("Gemini output incomplete or blocked")
+        finish_reason = candidate.get("finishReason")
+        if finish_reason not in {None, "STOP"}:
+            raise RuntimeError(f"Gemini finishReason={finish_reason}")
         return "".join(p.get("text", "") for p in candidate["content"]["parts"] if not p.get("thought"))
     except (KeyError, IndexError, TypeError):
         raise RuntimeError("Gemini returned no complete text") from None
@@ -359,7 +361,7 @@ class Threads:
                 keys = ("option_a", "option_b", "option_c", "option_d")
                 poll_payload = json.dumps({keys[i]: valid[i] for i in range(len(valid))}, ensure_ascii=False)
 
-        # Ordered attempts from richest native format down to plain TEXT
+        # Ordered attempts: full -> poll without topic_tag -> topic_tag without poll -> plain TEXT
         attempts: list[tuple[dict[str, str], str]] = []
         full_form = dict(base_form)
         if clean_tag:
@@ -367,6 +369,11 @@ class Threads:
         if poll_payload:
             full_form["poll_attachment"] = poll_payload
         attempts.append((full_form, "full"))
+
+        if poll_payload and clean_tag:
+            poll_only = dict(base_form)
+            poll_only["poll_attachment"] = poll_payload
+            attempts.append((poll_only, "dropped_topic_tag_kept_poll"))
 
         if poll_payload:
             no_poll = dict(base_form)
@@ -377,6 +384,7 @@ class Threads:
             attempts.append((dict(base_form), "dropped_topic_tag_and_poll"))
 
         last_exc: Exception | None = None
+        errors_seen: list[str] = []
         for idx, (form, label) in enumerate(attempts):
             try:
                 container = self._form("/me/threads", form)
@@ -384,10 +392,11 @@ class Threads:
                 if not creation_id:
                     raise RuntimeError("Threads returned no container id")
                 if idx > 0:
-                    downgrades.append(label)
+                    downgrades.append(f"{label} ({'; '.join(errors_seen)})" if errors_seen else label)
                 return creation_id, downgrades
             except APIError as exc:
                 last_exc = exc
+                errors_seen.append(f"{label}:HTTP{exc.status}:{exc.code}/{exc.subcode}:{exc.message[:80]}")
                 if exc.status != 400 or idx == len(attempts) - 1:
                     raise
         raise last_exc or RuntimeError("Container creation failed")
@@ -595,6 +604,7 @@ def run_post(dry_run: bool, *, offline: bool = False, now: dt.datetime | None = 
         )
         run["post_id"] = post_id
         if downgrades:
+            run["publish_downgrades"] = downgrades
             run.setdefault("audit", {}).setdefault("downgrades", []).extend(downgrades)
         followup = str(run.get("followup_reply", "")).strip()
         if followup:
