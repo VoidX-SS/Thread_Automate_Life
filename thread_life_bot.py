@@ -648,7 +648,10 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
     client = Threads()
 
     if cap:
-        own_username = str(client.profile().get("username", "")).casefold()
+        try:
+            own_username = str(client.profile().get("username", "")).casefold()
+        except (APIError, RuntimeError):
+            own_username = ""
         own_ids = {str(x.get("id")) for x in history} | {
             str(x.get("followup_post_id")) for x in history if x.get("followup_post_id")
         }
@@ -657,7 +660,12 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
             if len(sent) >= cap or inspected >= 10:
                 break
             pid = str(post["id"])
-            for comment in client.replies(pid):
+            try:
+                comments = client.replies(pid)
+            except (APIError, RuntimeError):
+                # Token lacks threads_manage_replies scope or post unavailable on Meta
+                break
+            for comment in comments:
                 rid = str(comment.get("id", ""))
                 uname = str(comment.get("username", "")).casefold()
                 if not rid or rid in already or rid in own_ids or uname == own_username:

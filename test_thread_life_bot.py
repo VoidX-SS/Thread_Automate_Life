@@ -381,6 +381,14 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
             out = b.run_post(False, now=NOW)
             self.assertEqual(out.get("skipped"), "daily_cap_reached")
 
+    def test_run_replies_handles_api_error_gracefully(self):
+        b.save_json(b.HISTORY_PATH, [{"id": "post-123", "mode": "post", "at": NOW.isoformat(), "text": "test"}])
+        with patch.dict(os.environ, {"ENABLE_REPLIES": "true"}), patch.object(b, "Threads") as api:
+            api.return_value.profile.return_value = {"username": "bot"}
+            api.return_value.replies.side_effect = b.APIError(400)
+            out = b.run_replies(False, now=NOW)
+        self.assertEqual(out.get("sent"), [])
+
 
 
 if __name__ == "__main__":
