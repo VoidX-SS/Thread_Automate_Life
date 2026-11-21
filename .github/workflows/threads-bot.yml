@@ -3,10 +3,11 @@ name: Threads Psychology & Philosophy Bot (v3)
 on:
   schedule:
     # Nominal Vietnam time (UTC+7); GitHub may delay scheduled runs.
-    - cron: "45 4 * * *"   # 11:45 VN - Post slot AM
-    - cron: "30 5 * * *"   # 12:30 VN - Midday reply scan + insights
-    - cron: "0 13 * * *"   # 20:00 VN - Post slot PM
-    - cron: "30 13 * * *"  # 20:30 VN - Evening reply scan + insights
+    - cron: "30 0 * * *"   # 07:30 VN - Slot 1: Early morning
+    - cron: "30 4 * * *"   # 11:30 VN - Slot 2: Midday lunch
+    - cron: "30 7 * * *"   # 14:30 VN - Slot 3: Afternoon
+    - cron: "30 11 * * *"  # 18:30 VN - Slot 4: Evening
+    - cron: "30 14 * * *"  # 21:30 VN - Slot 5: Night (Psychology / Reflection)
   workflow_dispatch:
     inputs:
       mode:
@@ -43,6 +44,8 @@ jobs:
       DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
       ENABLE_REPLIES: ${{ vars.ENABLE_REPLIES || 'false' }}
       REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '5' }}
+      POST_DAILY_CAP: ${{ vars.POST_DAILY_CAP || '5' }}
+      POST_MIN_INTERVAL_MINUTES: ${{ vars.POST_MIN_INTERVAL_MINUTES || '60' }}
       TOPIC_SEED: ${{ vars.TOPIC_SEED || '' }}
       TREND_HINT: ${{ vars.TREND_HINT || '' }}
       ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'false' }}
@@ -69,7 +72,7 @@ jobs:
             MODE="${INPUT_MODE:-auto}"
             if [ "$INPUT_LIVE" = "true" ]; then LIVE=true; else LIVE=false; fi
           else
-            if [ "$SCHEDULE" = "30 5 * * *" ] || [ "$SCHEDULE" = "30 13 * * *" ]; then MODE=reply; else MODE=post; fi
+            MODE=auto
             if [ "$DRY_RUN" = "false" ]; then LIVE=true; else LIVE=false; fi
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"

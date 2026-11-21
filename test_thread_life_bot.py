@@ -340,6 +340,36 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
                 b.http_json("https://example.com")
         self.assertNotIn("secret-test-token", str(result.exception))
 
+    def test_run_post_respects_post_daily_cap_and_min_interval(self):
+        # 1. Test slot already published
+        slot = b.post_slot(NOW)
+        b.save_json(b.HISTORY_PATH, [{
+            "id": "p0", "mode": "post", "at": (NOW - dt.timedelta(hours=5)).isoformat(),
+            "slot": slot, "text": "sample",
+        }])
+        out = b.run_post(False, now=NOW)
+        self.assertEqual(out.get("skipped"), "slot_already_published")
+
+        # 2. Test min interval not elapsed
+        b.save_json(b.HISTORY_PATH, [{
+            "id": "p0", "mode": "post", "at": (NOW - dt.timedelta(minutes=30)).isoformat(),
+            "slot": "other-slot", "text": "sample",
+        }])
+        with patch.dict(os.environ, {"POST_MIN_INTERVAL_MINUTES": "60"}):
+            out = b.run_post(False, now=NOW)
+            self.assertEqual(out.get("skipped"), "min_interval_not_elapsed")
+
+        # 3. Test daily cap reached
+        today_posts = [
+            {"id": f"p{i}", "mode": "post", "at": (NOW - dt.timedelta(hours=i + 1)).isoformat(), "slot": f"s{i}"}
+            for i in range(5)
+        ]
+        b.save_json(b.HISTORY_PATH, today_posts)
+        with patch.dict(os.environ, {"POST_DAILY_CAP": "5", "POST_MIN_INTERVAL_MINUTES": "0"}):
+            out = b.run_post(False, now=NOW)
+            self.assertEqual(out.get("skipped"), "daily_cap_reached")
+
+
 
 if __name__ == "__main__":
     unittest.main()

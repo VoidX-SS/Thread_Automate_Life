@@ -484,7 +484,7 @@ def append_history(history: list[dict[str, Any]], item: dict[str, Any]) -> None:
 
 def post_slot(now: dt.datetime) -> str:
     local = now.astimezone(VIETNAM)
-    return f"{local.date().isoformat()}:{'am' if local.hour < 16 else 'pm'}"
+    return f"{local.date().isoformat()}:h{local.hour:02d}"
 
 
 def run_post(dry_run: bool, *, offline: bool = False, now: dt.datetime | None = None) -> dict[str, Any]:
@@ -495,12 +495,28 @@ def run_post(dry_run: bool, *, offline: bool = False, now: dt.datetime | None = 
     run: dict[str, Any] = {"mode": "post", "dry_run": dry_run, "at": now.isoformat(), "slot": slot}
     if not dry_run:
         today = now.astimezone(VIETNAM).date()
-        timestamps = [iso_time(p.get("at", "")) for p in posts]
-        count = sum(bool(t and t.astimezone(VIETNAM).date() == today) for t in timestamps)
-        if any(p.get("slot") == slot for p in posts) or count >= 2:
-            run["skipped"] = "slot_already_published_or_daily_cap"
+        valid_timestamps = [t for t in (iso_time(p.get("at", "")) for p in posts) if t is not None]
+        today_posts = [t for t in valid_timestamps if t.astimezone(VIETNAM).date() == today]
+        post_cap = bounded_int("POST_DAILY_CAP", 5, 1, 20)
+        min_interval_minutes = bounded_int("POST_MIN_INTERVAL_MINUTES", 60, 0, 720)
+
+        if len(today_posts) >= post_cap:
+            run["skipped"] = "daily_cap_reached"
             save_json(RUN_LOG_PATH, run)
             return run
+
+        if any(p.get("slot") == slot for p in posts):
+            run["skipped"] = "slot_already_published"
+            save_json(RUN_LOG_PATH, run)
+            return run
+
+        if valid_timestamps and min_interval_minutes > 0:
+            last_post_at = valid_timestamps[-1]
+            elapsed_seconds = (now - last_post_at).total_seconds()
+            if elapsed_seconds < min_interval_minutes * 60:
+                run["skipped"] = "min_interval_not_elapsed"
+                save_json(RUN_LOG_PATH, run)
+                return run
 
     signals, errors = trend_signals(now, slot, offline=offline)
     router = ModelRouter(dry_run=dry_run, now=now)
