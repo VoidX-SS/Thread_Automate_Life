@@ -343,5 +343,57 @@
       ]
     },
     "post_id": "17954936535049572"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-21T11:49:25.538923+00:00",
+    "slot": "2026-11-21:h18",
+    "id": "18122410300758367",
+    "seed_id": "dil_012_teletransportation",
+    "pillar": "dilemma",
+    "topic": "dilemma",
+    "format": "dilemma_poll",
+    "topic_tag": "Tâm lý học",
+    "text": "Nếu một cỗ máy quét nguyên tử, hủy diệt bản gốc và tái tạo y hệt bạn ở Sao Hỏa, việc bước vào máy là du hành hay chết đi?\n\nBản sao có trọn vẹn ký ức và cảm thấy chính là bạn, nên lằn ranh giữa sự sống và sự tiêu vong bỗng mờ đi.\n\nBạn chọn góc nhìn nào?",
+    "followup_reply": "",
+    "poll_options": [
+      "Vẫn là mình, dám bước",
+      "Bản gốc đã mất, thôi"
+    ],
+    "source": "gemini_editor",
+    "editor_score": 91,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-21",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 5,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 8,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18122410300758367"
   }
 ]
