@@ -395,5 +395,42 @@
       ]
     },
     "post_id": "18122410300758367"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-21T14:30:24.458444+00:00",
+    "slot": "2026-11-21:h21",
+    "seed_id": "reserve_rawls_veil",
+    "pillar": "philosophy",
+    "format": "thought_experiment",
+    "topic_tag": "Triết học",
+    "text": "Làm sao biết một luật chơi xã hội có thực sự công bằng không?\n\nTriết gia John Rawls đề xuất thí nghiệm 'Mạng che Vô minh': hãy tự thiết kế luật chơi khi bạn chưa biết mình sẽ sinh ra giàu hay nghèo, khỏe hay yếu, lợi thế hay bất lợi.\n\nNếu đổi vị trí ngẫu nhiên như vậy, điều đầu tiên bạn muốn sửa trong xã hội hiện tại là gì?",
+    "followup_reply": "",
+    "poll_options": [],
+    "topic": "philosophy",
+    "source": "curated_reserve",
+    "engine_version": "3.1",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-21",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 6,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 9,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "status": "ok_after_fallback"
+        }
+      ]
+    },
+    "post_id": "18420489100082931",
+    "id": "18420489100082931"
   }
 ]
