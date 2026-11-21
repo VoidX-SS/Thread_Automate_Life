@@ -67,10 +67,23 @@ def save_json(path: Path, value: Any) -> None:
 
 
 class APIError(RuntimeError):
-    def __init__(self, status: int, retry_after: float = 0):
-        super().__init__(f"API HTTP {status}")
+    def __init__(
+        self,
+        status: int,
+        retry_after: float = 0,
+        message: str = "",
+        code: int | None = None,
+        subcode: int | None = None,
+    ):
+        detail = f": {message}" if message else ""
+        if code or subcode:
+            detail += f" (code: {code}, subcode: {subcode})"
+        super().__init__(f"API HTTP {status}{detail}")
         self.status = status
         self.retry_after = retry_after
+        self.message = message
+        self.code = code
+        self.subcode = subcode
 
 
 def http_json(
@@ -97,11 +110,24 @@ def http_json(
                 raise RuntimeError("API returned a non-object response")
             return value
     except urllib.error.HTTPError as exc:
+        msg, err_code, subcode = "", None, None
+        try:
+            raw = exc.read().decode("utf-8", errors="replace")
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict) and "error" in parsed:
+                err_obj = parsed["error"]
+                if isinstance(err_obj, dict):
+                    raw_msg = str(err_obj.get("message", ""))
+                    msg = re.sub(r"(token|key|secret)=[^\s&]+", r"\1=[REDACTED]", raw_msg, flags=re.IGNORECASE)
+                    err_code = err_obj.get("code")
+                    subcode = err_obj.get("error_subcode")
+        except Exception:
+            pass
         try:
             retry_after = float(exc.headers.get("Retry-After", "0"))
         except (TypeError, ValueError):
             retry_after = 0
-        raise APIError(exc.code, retry_after) from None
+        raise APIError(exc.code, retry_after, message=msg, code=err_code, subcode=subcode) from None
     except (urllib.error.URLError, TimeoutError, OSError):
         raise RuntimeError("API connection failed; credentials and URL omitted") from None
 
@@ -381,7 +407,29 @@ class Threads:
         if downgrades_out is not None:
             downgrades_out.extend(downgrades)
         # Never automatically retry /me/threads_publish after an ambiguous network failure.
-        published = self._form("/me/threads_publish", {"creation_id": creation_id})
+        published = None
+        for attempt in range(3):
+            try:
+                published = self._form("/me/threads_publish", {"creation_id": creation_id})
+                break
+            except APIError as exc:
+                # Meta returns 400 with subcode 2207027 if media container processing is still IN_PROGRESS
+                is_readiness = exc.status == 400 and (exc.subcode == 2207027 or "ready" in exc.message.lower() or attempt < 2)
+                if is_readiness and attempt < 2:
+                    time.sleep(2.0 * (attempt + 1))
+                    continue
+                # If enriched container publish failed (e.g. poll rejected by Meta), fall back to plain text
+                if (topic_tag or poll_options) and not reply_to_id:
+                    if downgrades_out is not None:
+                        downgrades_out.append("publish_failed_fallback_to_plain_text")
+                    plain_id, _ = self._create_container_with_fallback(text, reply_to_id=None)
+                    time.sleep(1.0)
+                    published = self._form("/me/threads_publish", {"creation_id": plain_id})
+                    break
+                raise
+
+        if not published:
+            raise RuntimeError("Threads publishing failed")
         post_id = str(published.get("id", ""))
         if not post_id:
             raise RuntimeError("Threads returned no post id")

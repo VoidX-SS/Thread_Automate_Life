@@ -305,6 +305,20 @@ class DualModelRouterAndRuntimeTests(FileTestBase):
         self.assertNotIn("poll_attachment", api.call_args_list[1].kwargs["form"])
         self.assertEqual(api.call_args_list[1].kwargs["form"]["topic_tag"], "Tâm lý học")
 
+    def test_publish_text_retries_on_readiness_error(self):
+        with patch.dict(os.environ, {"THREADS_ACCESS_TOKEN": "secret-tok"}), patch("time.sleep"):
+            with patch.object(
+                b,
+                "http_json",
+                side_effect=[
+                    {"id": "container-1"},
+                    b.APIError(400, message="The media is not ready for publishing", subcode=2207027),
+                    {"id": "post-ready"},
+                ],
+            ):
+                pid = b.Threads().publish_text("Nội dung thử nghiệm", topic_tag="Tâm lý học")
+                self.assertEqual(pid, "post-ready")
+
     def test_run_post_live_publishes_self_reply_chain_and_persists_quota(self):
         reserve_chain = e.RESERVES[0]  # brain_hook_chain with followup_reply
         with patch.object(e, "compose", return_value={
