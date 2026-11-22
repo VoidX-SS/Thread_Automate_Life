@@ -544,5 +544,57 @@
       ]
     },
     "post_id": "18099584453445933"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-22T00:30:26.731784+00:00",
+    "slot": "2026-11-22:h07",
+    "id": "18141885394653312",
+    "seed_id": "par_047_region_beta_paradox",
+    "pillar": "human_paradox",
+    "topic": "human_paradox",
+    "format": "paradox_opener",
+    "topic_tag": "Tâm lý học",
+    "text": "Công việc hơi chán nhưng đủ sống, tình cảm hơi nhạt nhưng chưa quá tệ, lại giữ ta mắc kẹt lâu nhất.\n\nDaniel Gilbert gọi đây là Nghịch lý Vùng Beta: thứ tệ vừa phải khiến ta khổ lâu hơn cú sốc nặng, vì nó chưa đủ đau để ép bạn thay đổi dứt khoát.\n\nBạn hay chủ động rời đi sớm hay đợi chạm đáy mới buông?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 95,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-22",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 2,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 10,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18141885394653312"
   }
 ]
