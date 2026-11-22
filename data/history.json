@@ -654,5 +654,44 @@
     "publish_downgrades": [
       "dropped_poll_attachment (full:HTTP400:100/4279063:Invalid parameter; dropped_topic_tag_kept_poll:HTTP400:100/4279063:Invalid parameter)"
     ]
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-22T07:10:33.122481+00:00",
+    "slot": "2026-11-22:h14",
+    "seed_id": "reserve_white_bear",
+    "pillar": "brain_glitch",
+    "format": "brain_hook_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Càng tự nhủ 'đừng nghĩ về chuyện đó nữa, ngủ đi', đầu bạn lại càng phát lại đúng chuyện đó rõ mồn một.\n\nNhà tâm lý Daniel Wegner gọi đây là Nghịch lý Con gấu trắng.",
+    "followup_reply": "Muốn kiểm tra xem mình đã ngừng nghĩ về một thứ chưa, hệ thống giám sát trong não buộc phải liên tục lôi chính thứ đó lên để đối chiếu, và vô tình giữ nó sáng đèn mãi.\n\nBạn thường dùng cách gì để đổi kênh suy nghĩ lúc mất ngủ?",
+    "poll_options": [],
+    "topic": "brain_glitch",
+    "source": "curated_reserve",
+    "engine_version": "3.1",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-22",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 13,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        }
+      ]
+    },
+    "post_id": "18020360978744654",
+    "followup_post_id": "18198844339396748",
+    "id": "18020360978744654"
   }
 ]
