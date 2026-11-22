@@ -596,5 +596,63 @@
       ]
     },
     "post_id": "18141885394653312"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-22T04:30:25.753638+00:00",
+    "slot": "2026-11-22:h11",
+    "id": "17941381239403486",
+    "seed_id": "phi_010_eternal_recurrence",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "dilemma_poll",
+    "topic_tag": "Triết học",
+    "text": "Nếu buộc phải sống lại đúng cuộc đời hiện tại lặp đi lặp lại vô hạn lần, giữ nguyên từng niềm vui lẫn nỗi đau không sửa một chi tiết, bạn thấy sao?\n\nTriết gia Nietzsche đặt ra Vòng lặp vĩnh cửu làm thước đo: xem cách bạn sống tuần này có xứng đáng lặp lại mãi mãi không.\n\nNếu vòng lặp bắt đầu ngay bây giờ, bạn chọn bên nào?",
+    "followup_reply": "",
+    "poll_options": [
+      "Sẵn sàng sống lại y hệt",
+      "Muốn đổi cách sống ngay"
+    ],
+    "source": "gemini_editor",
+    "editor_score": 86,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-22",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 12,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17941381239403486",
+    "publish_downgrades": [
+      "dropped_poll_attachment (full:HTTP400:100/4279063:Invalid parameter; dropped_topic_tag_kept_poll:HTTP400:100/4279063:Invalid parameter)"
+    ]
   }
 ]
