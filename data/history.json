@@ -693,5 +693,50 @@
     "post_id": "18020360978744654",
     "followup_post_id": "18198844339396748",
     "id": "18020360978744654"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-22T18:37:40.473823+00:00",
+    "slot": "2026-11-23:h01",
+    "id": "18151345723574494",
+    "seed_id": "par_050_abdul_paradox_good_advice",
+    "pillar": "human_paradox",
+    "topic": "human_paradox",
+    "format": "paradox_opener",
+    "topic_tag": "Tâm lý học",
+    "text": "Khi người khác bế tắc, ta cho lời khuyên rất khôn ngoan nhưng đến việc của mình thì mù tịt.\n\nIgor Grossmann và Ethan Kross gọi đây là nghịch lý Solomon. Khi quan sát từ góc nhìn của một người bạn, khoảng cách tâm lý giúp bộ não thoát khỏi sự lo âu cục bộ và xử lý thông tin khách quan hơn.\n\nBạn thường giải quyết rắc rối của mình giỏi hơn hay khuyên người khác khôn hơn?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 86,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-23",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 0,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 2,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18151345723574494"
   }
 ]
