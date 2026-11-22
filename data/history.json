@@ -738,5 +738,60 @@
       ]
     },
     "post_id": "18151345723574494"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-22T20:48:05.549436+00:00",
+    "slot": "2026-11-23:h03",
+    "seed_id": "reserve_ultimatum",
+    "pillar": "dilemma",
+    "format": "dilemma_poll",
+    "topic_tag": "Tâm lý học",
+    "text": "Một người lạ được phát 10 triệu để chia cho bạn. Bạn có quyền đồng ý để cả hai cùng nhận, hoặc từ chối để cả hai trắng tay.\n\nNếu họ giữ 9 triệu và chỉ chia bạn đúng 1 triệu, bạn chọn nhận hay hủy cho bõ tức?",
+    "followup_reply": "",
+    "poll_options": [
+      "Nhận 1 triệu cho khỏe",
+      "Hủy cho cả hai trắng tay"
+    ],
+    "topic": "dilemma",
+    "source": "curated_reserve",
+    "engine_version": "3.1",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-23",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 0,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 3,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        }
+      ]
+    },
+    "post_id": "17927802627435847",
+    "publish_downgrades": [
+      "dropped_poll_attachment (full:HTTP400:100/4279063:Invalid parameter; dropped_topic_tag_kept_poll:HTTP400:100/4279063:Invalid parameter)"
+    ],
+    "id": "17927802627435847"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-22T20:55:02.055042+00:00",
+    "reply_to_id": "18063969554547277",
+    "parent_post_id": "18151345723574494",
+    "text": "Khoảng cách tâm lý quả thực là lăng kính tốt để nhìn rõ vấn đề của người khác nhưng lại mờ đi khi phản chiếu vào chính mình. Làm sao để ta tự lùi lại một bước ngay trong tâm bão?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.0",
+    "id": "18116756837613141"
   }
 ]
