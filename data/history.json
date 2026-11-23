@@ -912,5 +912,44 @@
       ]
     },
     "post_id": "18080325617432207"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-23T07:30:32.080769+00:00",
+    "slot": "2026-11-23:h14",
+    "seed_id": "reserve_zeigarnik",
+    "pillar": "brain_glitch",
+    "format": "brain_hook_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Vì sao một mối quan hệ kết thúc lửng lơ lại ám ảnh lâu hơn hẳn một lời từ chối phũ phàng?\n\nNão bộ chịu tác động của Hiệu ứng Zeigarnik: những thứ chưa khép lại luôn bị giữ ở trạng thái treo trên bộ nhớ làm việc.",
+    "followup_reply": "Khi một việc đã có dấu chấm hết rõ ràng, não mới dám đóng tab và cất vào kho lưu trữ dài hạn.\n\nVới bạn, kiểu kết thúc nào khó quên hơn: bị từ chối thẳng hay im lặng biến mất?",
+    "poll_options": [],
+    "topic": "brain_glitch",
+    "source": "curated_reserve",
+    "engine_version": "3.1",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-23",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 14,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP429",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        }
+      ]
+    },
+    "post_id": "18129363535900320",
+    "followup_post_id": "18079012304737868",
+    "id": "18129363535900320"
   }
 ]
