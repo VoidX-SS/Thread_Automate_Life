@@ -14,6 +14,118 @@
         "format": "soft_opinion",
         "pillar": "legacy"
       }
+    },
+    "18020360978744654": {
+      "h24": {
+        "views": 263,
+        "likes": 1,
+        "replies": 1,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 28.33,
+        "source": "threads_api",
+        "format": "brain_hook_chain",
+        "pillar": "brain_glitch"
+      }
+    },
+    "17941381239403486": {
+      "h24": {
+        "views": 148,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 31.0,
+        "source": "threads_api",
+        "format": "dilemma_poll",
+        "pillar": "philosophy"
+      }
+    },
+    "18141885394653312": {
+      "h24": {
+        "views": 190,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 35.0,
+        "source": "threads_api",
+        "format": "paradox_opener",
+        "pillar": "human_paradox"
+      }
+    },
+    "18099584453445933": {
+      "h24": {
+        "views": 251,
+        "likes": 2,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 38.88,
+        "source": "threads_api",
+        "format": "thought_experiment",
+        "pillar": "philosophy"
+      }
+    },
+    "18089670542709282": {
+      "h24": {
+        "views": 197,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 41.36,
+        "source": "threads_api",
+        "format": "paradox_opener",
+        "pillar": "brain_glitch"
+      }
+    },
+    "18420489100082931": {
+      "h24": {
+        "views": 21,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 45.0,
+        "source": "threads_api",
+        "format": "thought_experiment",
+        "pillar": "philosophy"
+      }
+    },
+    "18122410300758367": {
+      "h24": {
+        "views": 8,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 47.68,
+        "source": "threads_api",
+        "format": "dilemma_poll",
+        "pillar": "dilemma"
+      }
+    },
+    "17954936535049572": {
+      "h72": {
+        "views": 1288,
+        "likes": 4,
+        "replies": 2,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-23T11:30:27.925169+00:00",
+        "age_hours": 62.57,
+        "source": "threads_api",
+        "format": "brain_hook_chain",
+        "pillar": "brain_glitch"
+      }
     }
   }
 }
