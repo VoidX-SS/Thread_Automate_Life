@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""Dependency-free Threads publisher (v3.0) with Seed-Grounded Engine and Dual-Model Routing.
-
-Model routing:
-- Flagship (`gemini-4-hydrogen`, daily cap 20 req/day): post_writer.
-- Workhorse (`gemini-3.5-flash-lite`, high quota): post_screener, post_chief_editor, reply_writer, reply_editor,
-  CI dry-runs, and automatic fallback whenever flagship hits daily cap or transient errors.
-"""
 from __future__ import annotations
 
 import argparse
@@ -33,7 +26,7 @@ HISTORY_PATH = DATA / "history.json"
 METRICS_PATH = DATA / "metrics.json"
 QUOTA_PATH = DATA / "quota.json"
 RUN_LOG_PATH = DATA / "last_run.json"
-VIETNAM = dt.timezone(dt.timedelta(hours=7))  # Vietnam has no daylight saving time.
+VIETNAM = dt.timezone(dt.timedelta(hours=7))
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -137,7 +130,7 @@ def http_text(url: str) -> str:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme != "https" or parsed.hostname != "trends.google.com":
         raise RuntimeError("Only the documented Google Trends HTTPS feed is enabled")
-    request = urllib.request.Request(url, headers={"User-Agent": "ThreadAutomateLife/3.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "ThreadAutomateLife/3.2"})
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
             if urllib.parse.urlparse(response.url).hostname != "trends.google.com":
@@ -177,7 +170,7 @@ def gemini_call(prompt: str, *, model: str, temperature: float = 0.7) -> str:
             response = http_json(url, method="POST", headers={"x-goog-api-key": api_key}, body=payload)
             break
         except APIError as exc:
-            if attempt or exc.status not in {429, 500, 503} or exc.retry_after > 10:
+            if attempt or exc.status not in {500, 503} or exc.retry_after > 10:
                 raise
             time.sleep(max(2, exc.retry_after))
     try:
@@ -191,8 +184,6 @@ def gemini_call(prompt: str, *, model: str, temperature: float = 0.7) -> str:
 
 
 class ModelRouter:
-    """Routes roles between Flagship (20 req/day cap) and Workhorse with automatic fallback."""
-
     def __init__(self, *, dry_run: bool, now: dt.datetime | None = None) -> None:
         cfg = engine.config()
         model_cfg = cfg.get("models", {})
@@ -218,6 +209,7 @@ class ModelRouter:
         )
         self.roles = dict(model_cfg.get("roles", {
             "post_writer": "flagship",
+            "post_writer_repair": "workhorse",
             "post_screener": "workhorse",
             "post_chief_editor": "workhorse",
             "reply_writer": "workhorse",
@@ -240,7 +232,6 @@ class ModelRouter:
     def _record_usage(self, model: str) -> None:
         bucket = self._day_bucket()
         bucket[model] = int(bucket.get(model, 0)) + 1
-        # Keep only the most recent 30 days
         days = self.quota.get("days", {})
         for old_key in sorted(days.keys())[:-30]:
             days.pop(old_key, None)
@@ -264,47 +255,41 @@ class ModelRouter:
 
     def call_json(self, prompt: str, *, role: str = "post_writer", temperature: float = 0.7) -> dict[str, Any]:
         chosen_model, downgrade_reason = self._pick_tier(role)
-        is_flagship = (chosen_model == self.flagship)
-        max_attempts = bounded_int("FLAGSHIP_MAX_RETRIES", 4, 1, 10) if is_flagship else 1
+        is_flagship = chosen_model == self.flagship
+        max_attempts = bounded_int("FLAGSHIP_MAX_RETRIES", 2, 1, 5) if is_flagship else 1
         last_exc: Exception | None = None
+        attempts_made = 0
 
         for attempt in range(max_attempts):
+            attempts_made = attempt + 1
             try:
                 raw = gemini_call(prompt, model=chosen_model, temperature=temperature)
                 parsed = parse_model_json(raw)
                 self._record_usage(chosen_model)
-                status_label = "ok" if attempt == 0 else f"ok_attempt_{attempt + 1}"
+                status_label = "ok" if attempt == 0 else f"ok_attempt_{attempts_made}"
                 self.trace.append({
                     "role": role,
                     "model": chosen_model,
                     "fallback": downgrade_reason,
-                    "attempts": attempt + 1,
+                    "attempts": attempts_made,
                     "status": status_label,
                 })
                 return parsed
             except (APIError, RuntimeError, ValueError) as exc:
                 last_exc = exc
+                status_code = getattr(exc, "status", None)
+                if is_flagship and status_code in {400, 403, 404, 429}:
+                    break
                 if is_flagship and attempt < max_attempts - 1:
                     retry_after = getattr(exc, "retry_after", 0) or 0
-                    delay = min(60.0, max(10.0, float(retry_after or (15.0 * (attempt + 1)))))
-                    print(
-                        f"[ModelRouter] Flagship {chosen_model} attempt {attempt + 1}/{max_attempts} failed "
-                        f"({type(exc).__name__}: {exc}). Retrying in {delay:.1f}s...",
-                        flush=True,
-                    )
+                    delay = min(20.0, max(5.0, float(retry_after or 8.0)))
                     time.sleep(delay)
                     continue
                 break
 
-        # If flagship failed all attempts, degrade seamlessly to workhorse
         if is_flagship and self.workhorse != self.flagship and last_exc is not None:
             status = getattr(last_exc, "status", None)
             err_tag = f"flagship_error_HTTP{status}" if isinstance(status, int) else f"flagship_error_{type(last_exc).__name__}"
-            print(
-                f"[ModelRouter] Flagship {chosen_model} exhausted all {max_attempts} attempts. "
-                f"Falling back to workhorse {self.workhorse} ({err_tag})...",
-                flush=True,
-            )
             try:
                 raw = gemini_call(prompt, model=self.workhorse, temperature=temperature)
                 parsed = parse_model_json(raw)
@@ -313,7 +298,7 @@ class ModelRouter:
                     "role": role,
                     "model": self.workhorse,
                     "fallback": err_tag,
-                    "attempts": max_attempts,
+                    "attempts": attempts_made,
                     "status": "ok_after_fallback",
                 })
                 return parsed
@@ -322,21 +307,21 @@ class ModelRouter:
                     "role": role,
                     "model": self.workhorse,
                     "fallback": err_tag,
-                    "attempts": max_attempts,
+                    "attempts": attempts_made,
                     "status": f"failed:{type(workhorse_exc).__name__}",
                 })
                 raise
 
-        # If non-flagship failed, or workhorse fallback was skipped/failed
         if last_exc is not None:
             self.trace.append({
                 "role": role,
                 "model": chosen_model,
                 "fallback": downgrade_reason,
-                "attempts": max_attempts,
+                "attempts": attempts_made,
                 "status": f"failed:{type(last_exc).__name__}",
             })
             raise last_exc
+        raise RuntimeError("ModelRouter failed without exception")
 
     def summary(self) -> dict[str, Any]:
         return {
@@ -396,12 +381,12 @@ class Threads:
 
         poll_payload = ""
         if poll_options and not reply_to_id:
-            valid = [opt.strip()[:25] for opt in poll_options if opt.strip()][:4]
+            valid = [engine.trim_utf8(opt, 25) for opt in poll_options if opt and opt.strip()]
+            valid = [opt for opt in valid if opt and engine.utf8_len(opt) <= 25][:4]
             if len(valid) >= 2:
                 keys = ("option_a", "option_b", "option_c", "option_d")
                 poll_payload = json.dumps({keys[i]: valid[i] for i in range(len(valid))}, ensure_ascii=False)
 
-        # Ordered attempts: full -> poll without topic_tag -> topic_tag without poll -> plain TEXT
         attempts: list[tuple[dict[str, str], str]] = []
         full_form = dict(base_form)
         if clean_tag:
@@ -455,19 +440,18 @@ class Threads:
         )
         if downgrades_out is not None:
             downgrades_out.extend(downgrades)
-        # Never automatically retry /me/threads_publish after an ambiguous network failure.
         published = None
         for attempt in range(3):
             try:
                 published = self._form("/me/threads_publish", {"creation_id": creation_id})
                 break
             except APIError as exc:
-                # Meta returns 400 with subcode 2207027 if media container processing is still IN_PROGRESS
-                is_readiness = exc.status == 400 and (exc.subcode == 2207027 or "ready" in exc.message.lower() or attempt < 2)
+                is_readiness = exc.status == 400 and (
+                    exc.subcode == 2207027 or "ready" in exc.message.lower() or attempt < 2
+                )
                 if is_readiness and attempt < 2:
                     time.sleep(2.0 * (attempt + 1))
                     continue
-                # If enriched container publish failed (e.g. poll rejected by Meta), fall back to plain text
                 if (topic_tag or poll_options) and not reply_to_id:
                     if downgrades_out is not None:
                         downgrades_out.append("publish_failed_fallback_to_plain_text")
@@ -646,15 +630,28 @@ def run_post(dry_run: bool, *, offline: bool = False, now: dt.datetime | None = 
         if downgrades:
             run["publish_downgrades"] = downgrades
             run.setdefault("audit", {}).setdefault("downgrades", []).extend(downgrades)
-        followup = str(run.get("followup_reply", "")).strip()
-        if followup:
-            delay = bounded_int("FOLLOWUP_DELAY_SECONDS", 10, 0, 30)
+
+        chain = engine.normalize_thread_replies(
+            run.get("thread_replies"),
+            str(run.get("followup_reply") or ""),
+        )
+        chain_ids: list[str] = []
+        parent_id = post_id
+        delay = bounded_int("CHAIN_DELAY_SECONDS", bounded_int("FOLLOWUP_DELAY_SECONDS", 8, 0, 30), 0, 30)
+        for idx, step_text in enumerate(chain):
             if delay > 0:
                 time.sleep(delay)
             try:
-                run["followup_post_id"] = client.publish_text(followup, reply_to_id=post_id)
+                child_id = client.publish_text(step_text, reply_to_id=parent_id)
+                chain_ids.append(child_id)
+                parent_id = child_id
             except RuntimeError:
-                run.setdefault("audit", {}).setdefault("errors", []).append("followup_reply_failed")
+                run.setdefault("audit", {}).setdefault("errors", []).append(f"chain_reply_{idx + 1}_failed")
+                break
+        if chain_ids:
+            run["followup_post_id"] = chain_ids[0]
+            run["followup_post_ids"] = chain_ids
+
         persisted = {k: v for k, v in {**run, "id": post_id}.items() if k != "audit"}
         append_history(history, persisted)
 
@@ -668,9 +665,15 @@ def metrics_values(response: dict[str, Any]) -> dict[str, int]:
         if not isinstance(row, dict):
             continue
         name = row.get("name")
-        values = row.get("values", [])
-        value = values[0].get("value") if values and isinstance(values[0], dict) else None
-        if name in {"views", "likes", "replies", "reposts", "quotes"} and type(value) is int and value >= 0:
+        if name not in {"views", "likes", "replies", "reposts", "quotes"}:
+            continue
+        value = None
+        values = row.get("values")
+        if isinstance(values, list) and values and isinstance(values[0], dict):
+            value = values[0].get("value")
+        elif isinstance(row.get("total_value"), dict):
+            value = row["total_value"].get("value")
+        if type(value) is int and value >= 0:
             out[name] = value
     return out
 
@@ -684,22 +687,26 @@ def collect_insights(dry_run: bool, *, now: dt.datetime | None = None) -> dict[s
     snapshots = metrics.setdefault("snapshots", {})
     fetched, errors = 0, []
     client = Threads()
-    for post in engine.post_history(history)[-40:]:
+    for post in reversed(engine.post_history(history)[-40:]):
         created = iso_time(post.get("at", ""))
         pid = str(post.get("id", post.get("post_id", "")))
         if not created or not pid:
             continue
         age = (now - created).total_seconds() / 3600
-        checkpoint = "h24" if 24 <= age < 48 else "h72" if 72 <= age < 96 else None
+        checkpoint = "h24" if 20 <= age < 60 else "h72" if 60 <= age < 144 else None
         if not checkpoint or checkpoint in snapshots.get(pid, {}):
             continue
         try:
             values = metrics_values(client.insights(pid))
-            if set(values) != {"views", "likes", "replies", "reposts", "quotes"}:
-                errors.append("incomplete_metrics_for_" + pid)
+            if "views" not in values:
+                errors.append("missing_views_for_" + pid)
                 continue
             snapshots.setdefault(pid, {})[checkpoint] = {
-                **values,
+                "views": values.get("views", 0),
+                "likes": values.get("likes", 0),
+                "replies": values.get("replies", 0),
+                "reposts": values.get("reposts", 0),
+                "quotes": values.get("quotes", 0),
                 "collected_at": now.isoformat(),
                 "age_hours": round(age, 2),
                 "source": "threads_api",
@@ -707,9 +714,15 @@ def collect_insights(dry_run: bool, *, now: dt.datetime | None = None) -> dict[s
                 "pillar": post.get("pillar", "legacy"),
             }
             fetched += 1
+        except APIError as exc:
+            if exc.status in {401, 403}:
+                errors.append(f"insights_permission_error_HTTP{exc.status}")
+                break
+            errors.append(f"insights_skipped_{pid}_HTTP{exc.status}")
+            continue
         except RuntimeError:
-            errors.append("insights_unavailable_check_threads_manage_insights")
-            break
+            errors.append(f"insights_connection_failed_{pid}")
+            continue
     if not dry_run:
         save_json(METRICS_PATH, metrics)
     return {
@@ -740,7 +753,7 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
         )
         for x in history
     )
-    cap = max(0, bounded_int("REPLY_DAILY_CAP", 5, 0, 10) - today_sent)
+    cap = max(0, bounded_int("REPLY_DAILY_CAP", 6, 0, 12) - today_sent)
     sent, inspected = [], 0
     router = ModelRouter(dry_run=dry_run, now=now)
     client = Threads()
@@ -750,23 +763,32 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
             own_username = str(client.profile().get("username", "")).casefold()
         except (APIError, RuntimeError):
             own_username = ""
-        own_ids = {str(x.get("id")) for x in history} | {
-            str(x.get("followup_post_id")) for x in history if x.get("followup_post_id")
-        }
+        own_ids: set[str] = set()
+        for x in history:
+            if x.get("id"):
+                own_ids.add(str(x["id"]))
+            if x.get("followup_post_id"):
+                own_ids.add(str(x["followup_post_id"]))
+            for cid in x.get("followup_post_ids") or []:
+                own_ids.add(str(cid))
+
         replied_users_per_post: Counter[tuple[str, str]] = Counter()
         for post in reversed(engine.post_history(history)[-10:]):
-            if len(sent) >= cap or inspected >= 10:
+            if len(sent) >= cap or inspected >= 12:
                 break
             pid = str(post["id"])
             try:
                 comments = client.replies(pid)
-            except (APIError, RuntimeError):
-                # Token lacks threads_manage_replies scope or post unavailable on Meta
-                break
+            except APIError as exc:
+                if exc.status in {401, 403}:
+                    break
+                continue
+            except RuntimeError:
+                continue
             for comment in comments:
                 rid = str(comment.get("id", ""))
                 uname = str(comment.get("username", "")).casefold()
-                if not rid or rid in already or rid in own_ids or uname == own_username:
+                if not rid or rid in already or rid in own_ids or (own_username and uname == own_username):
                     continue
                 if uname and replied_users_per_post[(pid, uname)] >= 2:
                     continue
@@ -781,7 +803,7 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
                         "text": text,
                         "dry_run": dry_run,
                         "source": "gemini_workhorse_reply",
-                        "engine_version": "3.0",
+                        "engine_version": "3.2",
                     }
                     if not dry_run:
                         item["id"] = client.publish_text(text, reply_to_id=rid)
@@ -790,7 +812,7 @@ def run_replies(dry_run: bool, *, now: dt.datetime | None = None) -> dict[str, A
                     if uname:
                         replied_users_per_post[(pid, uname)] += 1
                 already.add(rid)
-                if len(sent) >= cap or inspected >= 10:
+                if len(sent) >= cap or inspected >= 12:
                     break
     router.persist()
     run = {
@@ -815,7 +837,7 @@ def run_refresh_token(dry_run: bool) -> dict[str, Any]:
         "dry_run": False,
         "refreshed": bool(res.get("access_token")),
         "expires_in_days": round(expires_in / 86400, 1) if expires_in else None,
-        "note": "Token value intentionally redacted from stdout/logs. Use get_threads_token.py --refresh locally to inspect and copy.",
+        "note": "Token value redacted from stdout. Run get_threads_token.py --refresh locally to inspect.",
     }
 
 
@@ -824,8 +846,8 @@ def main() -> int:
     parser.add_argument("--mode", choices=("auto", "post", "reply", "insights", "refresh-token"), default="post")
     switch = parser.add_mutually_exclusive_group()
     switch.add_argument("--live", action="store_true")
-    switch.add_argument("--dry-run", action="store_true", help="Force preview even if DRY_RUN=false")
-    switch.add_argument("--offline", action="store_true", help="Preview reserves with zero network calls")
+    switch.add_argument("--dry-run", action="store_true")
+    switch.add_argument("--offline", action="store_true")
     args = parser.parse_args()
     if args.offline and (args.live or args.mode != "post"):
         parser.error("--offline is only valid for post previews")

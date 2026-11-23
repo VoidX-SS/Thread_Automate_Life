@@ -1,4 +1,4 @@
-name: Test and preview content (v3)
+name: Test and preview content (v3.2)
 on:
   push:
     branches: [main]
@@ -27,7 +27,7 @@ jobs:
       - run: python -m unittest -v
       - name: Offline smoke preview
         run: python thread_life_bot.py --offline
-      - name: Preview with workhorse model on main (saves Flagship 20/day quota)
+      - name: Preview with workhorse model on main
         if: github.event_name == 'push'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

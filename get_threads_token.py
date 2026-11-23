@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Utility script to obtain or refresh a 60-day Threads Long-Lived Access Token (v3.0)."""
 from __future__ import annotations
 
 import argparse
@@ -77,13 +76,13 @@ def refresh_existing() -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--refresh", action="store_true", help="Gia hạn token dài hạn hiện có trước khi hết 60 ngày")
+    parser.add_argument("--refresh", action="store_true")
     args = parser.parse_args()
     if args.refresh:
         return refresh_existing()
 
     print("=" * 60)
-    print(" CÔNG CỤ TẠO THREADS LONG-LIVED ACCESS TOKEN v3 (5 QUYỀN)")
+    print(" CÔNG CỤ TẠO THREADS LONG-LIVED ACCESS TOKEN v3.2 (5 QUYỀN)")
     print("=" * 60)
 
     app_id = os.getenv("THREADS_APP_ID") or input("\n1. Nhập App ID: ").strip()

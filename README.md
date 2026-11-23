@@ -1,60 +1,45 @@
-# Thread Automate Life v3 — Tâm lý học, Bộ não, Triết học & Nghịch lý lựa chọn
+# Thread Automate Life v3.2
 
-Hệ thống vận hành kênh Threads tiếng Việt tự động hoàn toàn dựa trên **kho 200 seed đã xác thực (`data/seed_bank.json`)**, **kiến trúc 2 tầng mô hình (`gemini-4-hydrogen` + `gemini-3.5-flash-lite`)** và **đa định dạng gốc trên Threads API** (Native Poll, Self-Reply Chain, Topic Tag).
+Hệ thống vận hành kênh Threads tiếng Việt tự động hoàn toàn về Tâm lý học hành vi, Bộ não, Triết học đời sống và Nghịch lý lựa chọn. Chạy thuần Python 3.11+ standard library, không cần `pip install`.
 
-Chạy thuần Python 3.11+ standard library, không cần `pip install`.
+## Thay đổi cốt lõi ở v3.2
 
-## Kiến trúc 2 tầng mô hình (Quản trị quota 20 req/ngày)
+- **Loại bỏ hoàn toàn GitHub `schedule:` cron** trong `.github/workflows/threads-bot.yml` để tránh delay rạng sáng; kích hoạt chuẩn giờ qua **cron-job.org** bằng `workflow_dispatch` hoặc `repository_dispatch`.
+- **4 định dạng bám đúng tín hiệu thuật toán Threads** (`format_weights` 30 / 30 / 25 / 15):
+  - `repost_manifesto` (30%): Tuyên ngôn tâm lý sắc gọn (55-220 ký tự), không tên học giả, không câu hỏi ép buộc, tối ưu lượt Repost.
+  - `micro_dilemma` (30%): Tình huống đạo đức/lựa chọn 2-3 câu không thuật ngữ hàn lâm, hỏi 1 câu trả lời trong 3 giây.
+  - `decode_chain` (25%): Chuỗi giải mã 3-4 tầng (`1/3..3/3` hoặc `1/4..4/4`), tự đăng nối tiếp từng reply (`reply_to_id` nối chuỗi) để kéo dwell time và follower.
+  - `dilemma_poll` (15%): Native Poll API đã vá triệt để lỗi `HTTP400:100/4279063` bằng kiểm tra **<= 25 byte UTF-8** trên toàn bộ 200 seed, `gate()` và `Threads.publish_text`.
+- **Phân vai 2 tầng mô hình tối ưu quota 20 req/ngày:**
+  - `gemini-4-hydrogen` đảm nhận `post_writer`; tự động hạ cấp ngay lập tức sang `gemini-3.5-flash-lite` khi gặp `HTTP 429/400/403/404` (không ngủ chờ 4 lần vô ích), chỉ retry tối đa 2 lần cho lỗi tạm thời `500/503`.
+  - `gemini-3.5-flash-lite` đảm nhận `post_writer_repair`, `post_screener`, `post_chief_editor`, `reply_writer`, `reply_editor`.
+  - Thêm lượt **1-shot Repair (`post_writer_repair`)** bằng `flash-lite` nếu cả 6 bài nháp đầu bị `gate()` loại, giảm mạnh tỷ lệ rơi về `curated_reserve`.
+- **Viết lại `REPLY_WRITER_RULES`:** 1 câu ngắn 15-130 ký tự, cấm văn phỏng vấn AI (`quả thực`, `lăng kính`, `tâm bão`, `tự vấn`).
+- **Sửa lỗi mù `metrics.json`:** `collect_insights()` duyệt ngược từ bài mới nhất, không `break` khi 1 bài cũ lỗi 400/404 (chỉ dừng khi 401/403), hỗ trợ cả `total_value`, mở rộng cửa sổ `h24` (20-60h) và `h72` (60-144h).
 
-| Vai trò | Mô hình đảm nhận | Tải ước tính (2 bài + 2 lượt reply/ngày) | Vai trò cụ thể |
-|---|---|---|---|
-| `post_writer` | **`gemini-4-hydrogen`** (Flagship) | 2 req/ngày | Viết 6 bài nháp sắc gọn, tự nhiên, bám sát 6 seed được cấp |
-| `post_screener` | **`gemini-3.5-flash-lite`** (Workhorse) | 2 req/ngày | Sơ loại nhanh: kiểm tra bám sát seed, đúng format, chống trùng ý với 30 bài gần nhất, lọc top 3 |
-| `post_chief_editor` | **`gemini-4-hydrogen`** (Flagship) | 2 req/ngày | Tổng biên tập chấm điểm độc lập (`temperature=0.15`), kiểm soát chất lượng cuối cùng |
-| `reply_writer` | **`gemini-3.5-flash-lite`** (Workhorse) | 0–20 req/ngày | Soạn phản hồi đối thoại thông minh theo từng bình luận người đọc |
-| `reply_editor` | **`gemini-3.5-flash-lite`** (Workhorse) | 0–20 req/ngày | Duyệt an toàn & giọng điệu cho từng câu trả lời |
-| CI Preview (`test.yml`) | **`gemini-3.5-flash-lite`** | 100% Workhorse | Đặt `ALLOW_FLAGSHIP_IN_DRY_RUN=false` để push code không đốt quota 20/ngày |
+## Cấu hình cron-job.org (5 khung giờ chuẩn VN)
 
-- **Tổng mức dùng `gemini-4-hydrogen` bình thường:** ~4 req/ngày (tối đa 8 req/ngày nếu có retry) — luôn nằm an toàn trong ngưỡng **20 req/ngày**.
-- **Bảo vệ chống tràn quota:** `data/quota.json` đếm số request theo ngày giờ Việt Nam. Khi chạm `FLAGSHIP_DAILY_CAP` (mặc định 20) hoặc gặp lỗi 429/500/503, hệ thống tự động hạ cấp mượt sang `gemini-3.5-flash-lite` và ghi vết rõ ràng vào `audit`.
+Tạo các job trên `cron-job.org` (múi giờ `Asia/Ho_Chi_Minh`) theo các khung giờ đăng bài (ví dụ 07:30, 11:30, 14:30, 18:30, 21:30):
 
-## 4 Trụ cột nội dung & 200 Seed (`data/seed_bank.json`)
+- **Method:** `POST`
+- **URL (`workflow_dispatch`):** `https://api.github.com/repos/<OWNER>/<REPO>/actions/workflows/threads-bot.yml/dispatches`
+- **Headers:**
+  - `Authorization: Bearer <GITHUB_PAT_CO_QUYEN_ACTIONS_WRITE>`
+  - `Accept: application/vnd.github+json`
+  - `Content-Type: application/json`
+- **Body (đăng bài + quét reply + insights):**
+  ```json
+  {"ref":"main","inputs":{"mode":"auto","live":true}}
+  ```
+- **Body (chỉ quét reply + thu insights sau 40 phút):**
+  ```json
+  {"ref":"main","inputs":{"mode":"reply","live":true}}
+  ```
 
-- **50 `dilemma`:** Tình huống đạo đức, lý thuyết trò chơi, kinh tế học hành vi → đăng dạng **Native Poll** (`poll_attachment` 2–3 lựa chọn ≤ 25 ký tự).
-- **50 `brain_glitch`:** Lỗi nhận thức, ảo giác thần kinh, trí nhớ → đăng dạng **Chuỗi 2 tầng** (Bài chính + tự động đăng `followup_reply` sau 10 giây).
-- **50 `philosophy`:** Thí nghiệm tư duy & khái niệm triết học ứng dụng ít phổ biến.
-- **50 `human_paradox`:** Thiên kiến nhận thức & nghịch lý hành vi xã hội.
-- **Cooldown 120 bài:** Một seed đã đăng sẽ không lặp lại trong ít nhất 120 bài (~60 ngày với tần suất 2 bài/ngày).
-
-## Lệnh chạy kiểm thử
+## Chạy kiểm thử cục bộ
 
 ```bash
 python -m unittest -v
 python thread_life_bot.py --offline
 python thread_life_bot.py --dry-run
 ```
-
-## Thiết lập GitHub Secrets & Variables
-
-1. **Cấp lại Threads Token đủ 5 quyền** (để chạy cả Reply và Insights):
-   ```bash
-   python get_threads_token.py
-   ```
-   (Để gia hạn token trước khi hết 60 ngày: `python get_threads_token.py --refresh`.)
-2. Tại **Settings → Secrets and variables → Actions**:
-   - Secrets: `GEMINI_API_KEY`, `THREADS_ACCESS_TOKEN`
-   - Variables gợi ý:
-     - `GEMINI_FLAGSHIP_MODEL` = `gemini-4-hydrogen`
-     - `GEMINI_WORKHORSE_MODEL` = `gemini-3.5-flash-lite`
-     - `FLAGSHIP_DAILY_CAP` = `20`
-     - `DRY_RUN` = `false` (sau khi đã preview `--dry-run` đạt yêu cầu)
-     - `ENABLE_REPLIES` = `true` (sau khi cập nhật token 5 quyền)
-     - `ENABLE_INSIGHTS` = `true` (sau khi cập nhật token 5 quyền)
-     - `ENABLE_TREND_FEED` = `false`
-
-## Lịch chạy tự động (giờ Việt Nam)
-
-- **11:45:** Đăng bài chính slot sáng (`post`)
-- **12:30:** Quét & trả lời bình luận trưa (`reply` + `insights`)
-- **20:00:** Đăng bài chính slot tối (`post`)
-- **20:30:** Quét & trả lời bình luận tối (`reply` + `insights`)

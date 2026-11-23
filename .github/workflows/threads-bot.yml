@@ -1,13 +1,6 @@
-name: Threads Psychology & Philosophy Bot (v3)
+name: Threads Psychology & Philosophy Bot (v3.2)
 
 on:
-  schedule:
-    # Nominal Vietnam time (UTC+7); GitHub may delay scheduled runs.
-    - cron: "30 0 * * *"   # 07:30 VN - Slot 1: Early morning
-    - cron: "30 4 * * *"   # 11:30 VN - Slot 2: Midday lunch
-    - cron: "30 7 * * *"   # 14:30 VN - Slot 3: Afternoon
-    - cron: "30 11 * * *"  # 18:30 VN - Slot 4: Evening
-    - cron: "30 14 * * *"  # 21:30 VN - Slot 5: Night (Psychology / Reflection)
   workflow_dispatch:
     inputs:
       mode:
@@ -21,6 +14,8 @@ on:
         required: true
         default: false
         type: boolean
+  repository_dispatch:
+    types: [run-bot]
 
 permissions:
   contents: write
@@ -32,26 +27,27 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GEMINI_FLAGSHIP_MODEL: ${{ vars.GEMINI_FLAGSHIP_MODEL || 'gemini-4-hydrogen' }}
       GEMINI_WORKHORSE_MODEL: ${{ vars.GEMINI_WORKHORSE_MODEL || vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
-      FLAGSHIP_MAX_RETRIES: ${{ vars.FLAGSHIP_MAX_RETRIES || '4' }}
+      FLAGSHIP_MAX_RETRIES: ${{ vars.FLAGSHIP_MAX_RETRIES || '2' }}
       FLAGSHIP_DAILY_CAP: ${{ vars.FLAGSHIP_DAILY_CAP || '20' }}
       FLAGSHIP_LIVE_RESERVE: ${{ vars.FLAGSHIP_LIVE_RESERVE || '6' }}
       ALLOW_FLAGSHIP_IN_DRY_RUN: ${{ vars.ALLOW_FLAGSHIP_IN_DRY_RUN || 'true' }}
       THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
       DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
       ENABLE_REPLIES: ${{ vars.ENABLE_REPLIES || 'false' }}
-      REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '5' }}
+      REPLY_DAILY_CAP: ${{ vars.REPLY_DAILY_CAP || '6' }}
       POST_DAILY_CAP: ${{ vars.POST_DAILY_CAP || '5' }}
       POST_MIN_INTERVAL_MINUTES: ${{ vars.POST_MIN_INTERVAL_MINUTES || '60' }}
+      CHAIN_DELAY_SECONDS: ${{ vars.CHAIN_DELAY_SECONDS || '8' }}
       TOPIC_SEED: ${{ vars.TOPIC_SEED || '' }}
       TREND_HINT: ${{ vars.TREND_HINT || '' }}
       ENABLE_TREND_FEED: ${{ vars.ENABLE_TREND_FEED || 'false' }}
       ENABLE_THREADS_TRENDS: ${{ vars.ENABLE_THREADS_TRENDS || 'false' }}
-      ENABLE_INSIGHTS: ${{ vars.ENABLE_INSIGHTS || 'false' }}
+      ENABLE_INSIGHTS: ${{ vars.ENABLE_INSIGHTS || 'true' }}
       CONTENT_DEBUG: ${{ vars.CONTENT_DEBUG || 'false' }}
     steps:
       - uses: actions/checkout@v5
@@ -60,21 +56,29 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Choose mode and force preview for manual live=false
+      - name: Resolve run mode and live flag
         id: settings
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_MODE: ${{ inputs.mode }}
           INPUT_LIVE: ${{ inputs.live }}
-          SCHEDULE: ${{ github.event.schedule }}
+          DISPATCH_MODE: ${{ github.event.client_payload.mode }}
+          DISPATCH_LIVE: ${{ github.event.client_payload.live }}
         run: |
           MODE=auto
+          LIVE=false
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             MODE="${INPUT_MODE:-auto}"
             if [ "$INPUT_LIVE" = "true" ]; then LIVE=true; else LIVE=false; fi
-          else
-            MODE=auto
-            if [ "$DRY_RUN" = "false" ]; then LIVE=true; else LIVE=false; fi
+          elif [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            MODE="${DISPATCH_MODE:-auto}"
+            if [ "$DISPATCH_LIVE" = "true" ]; then
+              LIVE=true
+            elif [ "$DISPATCH_LIVE" = "false" ]; then
+              LIVE=false
+            elif [ "$DRY_RUN" = "false" ]; then
+              LIVE=true
+            fi
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "live=$LIVE" >> "$GITHUB_OUTPUT"
@@ -99,7 +103,7 @@ jobs:
           if [ -f data/metrics.json ]; then git add data/metrics.json; fi
           if [ -f data/quota.json ]; then git add data/quota.json; fi
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "chore: record Threads v3 activity, insights, and model quota"
+          git commit -m "chore: record Threads v3.2 activity, insights, and model quota"
           git push
       - name: Save preview and decision audit
         if: always()

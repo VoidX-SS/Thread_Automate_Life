@@ -1,13 +1,14 @@
 {
-  "version": "3.1",
-  "persona": "Một người quan sát tỉnh táo, tò mò về cơ chế vận hành của bộ não, tâm lý học hành vi, triết học ứng dụng và các nghịch lý lựa chọn của con người hiện đại. Không dạy đời, không viết văn chữa lành sáo rỗng, không tấu hài cưỡng ép.",
-  "voice": "Tiếng Việt tự nhiên, sắc gọn, ngang hàng như một cuộc trò chuyện sâu bên bàn cà phê. Cấu trúc 3 tầng: Hook đời thường -> Giải thích sơ sơ cơ chế dễ hiểu -> Câu hỏi mở kích thích tranh luận. Xuống dòng thoáng mắt. Tuyệt đối không dùng =)), :)), ủa alo, hay câu cảm thán giả tạo. Không dùng em dash (—, –), không lạm dụng đặt ngoặc kép quanh các từ ngữ thông thường.",
-  "min_chars": 120,
-  "max_chars": 450,
-  "followup_max_chars": 430,
+  "version": "3.2",
+  "persona": "Một người quan sát tỉnh táo về tâm lý con người, cảm xúc, mối quan hệ, sự kiệt sức thầm lặng và những lựa chọn khó của người trưởng thành trẻ. Không giảng bài, không khoe chữ học thuật, không văn chữa lành sáo rỗng.",
+  "voice": "Tiếng Việt hiện đại, tự nhiên, sắc gọn như một ghi chú thông minh của người 25-34 tuổi hay đọc sách và quan sát cuộc sống. Dễ đọc trong 2-3 giây, xuống dòng thoáng mắt. Tuyệt đối không dùng =)), :)), ủa alo, em dash (—, –), hay bọc ngoặc kép quanh từ thông thường.",
+  "audience": "Người trưởng thành trẻ 25-34 và 18-24 tại đô thị Việt Nam, thiên về nữ giới và nhóm yêu thích Book Threads, Dating Threads, Coffee Threads, Art Threads. Ưu tiên góc chạm vào tình cảm, sự kiệt sức thầm lặng, overthinking, ranh giới giao tiếp và đánh đổi lựa chọn sống.",
+  "min_chars": 50,
+  "max_chars": 420,
+  "reply_chain_max_chars": 320,
   "preferred_chars": [
-    200,
-    380
+    90,
+    280
   ],
   "candidate_count": 6,
   "screener_top_k": 3,
@@ -21,35 +22,42 @@
     "flagship_live_reserve": 6,
     "roles": {
       "post_writer": "flagship",
+      "post_writer_repair": "workhorse",
       "post_screener": "workhorse",
       "post_chief_editor": "workhorse",
       "reply_writer": "workhorse",
       "reply_editor": "workhorse"
     }
   },
+  "format_weights": {
+    "repost_manifesto": 0.3,
+    "micro_dilemma": 0.3,
+    "decode_chain": 0.25,
+    "dilemma_poll": 0.15
+  },
   "pillars": {
     "dilemma": {
-      "brief": "Đặt người đọc vào tình huống lựa chọn khó về đạo đức, lợi ích hoặc giá trị sống; giải thích sơ sơ mâu thuẫn cốt lõi và không có đáp án đúng tuyệt đối.",
+      "brief": "Đặt người đọc vào tình huống đánh đổi khó về tình cảm, đạo đức, thời gian hoặc giá trị sống; không có đáp án đúng tuyệt đối.",
       "topic_tag": "Tâm lý học"
     },
     "brain_glitch": {
-      "brief": "Mở đầu bằng hiện tượng bộ não quen thuộc, nêu tên hiệu ứng, giải thích sơ sơ cơ chế khoa học đằng sau và kết bằng câu hỏi trải nghiệm thực tế.",
+      "brief": "Chạm vào thói quen kỳ lạ của bộ não và cảm xúc hằng ngày rồi giải mã ngắn gọn cơ chế đằng sau theo ngôn ngữ đời thường.",
       "topic_tag": "Tâm lý học"
     },
     "philosophy": {
-      "brief": "Kể một thí nghiệm tư duy hoặc khái niệm triết học sâu sắc, giải thích sơ sơ nghịch lý đằng sau và đặt câu hỏi mở phản biện cho người đọc.",
+      "brief": "Chuyển hóa một thí nghiệm tư duy hoặc góc nhìn triết học ít phổ biến thành quan sát sắc bén cho cách sống hiện đại.",
       "topic_tag": "Triết học"
     },
     "human_paradox": {
-      "brief": "Chỉ ra nghịch lý hành vi phổ biến, giải thích sơ sơ cơ chế tâm lý tạo ra nó rồi mở câu hỏi chia 2 góc nhìn để cộng đồng thảo luận.",
+      "brief": "Gọi tên những mâu thuẫn phổ biến trong tình cảm, công việc và tự nhận thức mà ai đọc cũng thấy bóng dáng mình.",
       "topic_tag": "Tâm lý học"
     }
   },
   "formats": {
-    "dilemma_poll": "Bài chính (180-340 ký tự) đặt tình huống lựa chọn thực tế rõ 2 chiều + giải thích sơ sơ mâu thuẫn cốt lõi + 1 câu hỏi dẫn vào bình chọn. Mảng poll_options gồm 2-3 lựa chọn cực ngắn (<= 25 ký tự). followup_reply để rỗng.",
-    "brain_hook_chain": "Bài chính (200-380 ký tự) nêu hiện tượng lạ đời thường + Tên hiệu ứng + GIẢI THÍCH SƠ SƠ CƠ CHẾ NÃO BỘ (tại sao não làm thế, bản chất tâm lý là gì) + kết bằng câu hỏi gợi trải nghiệm để người đọc thảo luận. followup_reply (120-280 ký tự) mở rộng thêm góc nhìn ứng dụng thực tế. poll_options để rỗng.",
-    "thought_experiment": "Bài chính (220-400 ký tự) kể cô đọng thí nghiệm tư duy trong seed + giải thích sơ sơ nghịch lý triết học sâu xa + câu hỏi đặt người đọc vào vị trí nhân vật để tranh luận. poll_options để rỗng.",
-    "paradox_opener": "Bài chính (180-360 ký tự) mở bằng nghịch lý hành vi quen thuộc + giải thích sơ sơ cơ chế tâm lý đằng sau + câu hỏi mở chia 2 góc nhìn để cộng đồng bàn luận. poll_options để rỗng."
+    "repost_manifesto": "Tuyên ngôn tâm lý cực sắc (55-220 ký tự, 2-4 dòng). KHÔNG nêu tên nhà khoa học/triết gia, KHÔNG cần câu hỏi kết. Viết như một sự thật đời sống khiến người đọc muốn bấm Repost về tường cá nhân. thread_replies và poll_options để rỗng.",
+    "micro_dilemma": "Tình huống tiến thoái lưỡng nan siêu gọn (70-240 ký tự, 2-3 câu). KHÔNG dùng thuật ngữ hàn lâm hay tên tác giả. Đặt thẳng kịch bản sắc nét về tình cảm, đạo đức hoặc lựa chọn sống rồi hỏi 1 câu mất 3 giây để trả lời. thread_replies và poll_options để rỗng.",
+    "decode_chain": "Chuỗi giải mã 3-4 tầng. Bài chính text (65-220 ký tự) mở bằng câu hỏi tò mò sắc gọn có sức hút (không khoe tên tác giả ngay câu đầu). Mảng thread_replies gồm 2-3 bài nối tiếp (mỗi bài 90-280 ký tự): giải thích cơ chế tâm lý tự nhiên, nối với đời thực và kết bằng 1 câu hỏi mở dễ trả lời. poll_options để rỗng.",
+    "dilemma_poll": "Bài bình chọn gọn (85-260 ký tự) nêu tình huống chọn phe rõ hai chiều + mảng poll_options gồm 2-3 lựa chọn CỰC NGẮN (tối đa 25 byte UTF-8, khoảng 10-15 ký tự tiếng Việt có dấu) + 1 câu hỏi gọn. thread_replies để rỗng."
   },
   "avoid_phrases": [
     "chữa lành",
@@ -65,6 +73,10 @@
     "ủa alo",
     "diễn viên oscar",
     "tự thưởng cho bản thân",
-    "comment ngay bên dưới"
+    "comment ngay bên dưới",
+    "quả thực là",
+    "lăng kính",
+    "tâm bão",
+    "tự vấn bản thân"
   ]
 }
