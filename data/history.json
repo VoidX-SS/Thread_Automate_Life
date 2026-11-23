@@ -793,5 +793,79 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.0",
     "id": "18116756837613141"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-23T00:30:25.464922+00:00",
+    "slot": "2026-11-23:h07",
+    "id": "18115103960621358",
+    "seed_id": "dil_048_future_self_stranger",
+    "pillar": "dilemma",
+    "topic": "dilemma",
+    "format": "thought_experiment",
+    "topic_tag": "Tâm lý học",
+    "text": "Tại sao biết rõ thức khuya hay tiêu hết tiền sẽ khổ, ta vẫn làm?\n\nẢnh chụp fMRI của Hal Hershfield cho thấy khi nghĩ về mình 10 năm sau, vùng não kích hoạt giống hệt lúc nghĩ về một người lạ. Trong vô thức, ta cứ thoải mái đẩy hóa đơn mệt mỏi hôm nay cho người lạ đó gánh giùm.\n\nNếu gặp bản thân 10 năm nữa ngay bây giờ, bạn nghĩ người đó sẽ cảm ơn hay trách móc bạn?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 91,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-23",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 7,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 3,
+          "status": "ok_attempt_3"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18115103960621358"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-23T00:33:15.450703+00:00",
+    "reply_to_id": "17920553415496760",
+    "parent_post_id": "17927802627435847",
+    "text": "Sự tự tôn đôi khi đắt giá hơn con số thực tế rất nhiều. Nếu là bạn, lằn ranh giữa việc giữ nguyên tắc và chịu mất mát nằm ở đâu?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.0",
+    "id": "18113367851099939"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-23T00:33:15.450703+00:00",
+    "reply_to_id": "17947630218366063",
+    "parent_post_id": "18151345723574494",
+    "text": "Chính xác, lời khuyên ngoài cuộc thường bỏ quên điều kiện vật chất và nguồn lực thực tế của người trong cuộc. Theo bạn, làm sao để thu hẹp khoảng cách ấy khi tự vấn bản thân?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.0",
+    "id": "18082204070409036"
   }
 ]
