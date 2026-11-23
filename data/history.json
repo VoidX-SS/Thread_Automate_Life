@@ -867,5 +867,50 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.0",
     "id": "18082204070409036"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-23T04:30:26.716813+00:00",
+    "slot": "2026-11-23:h11",
+    "id": "18080325617432207",
+    "seed_id": "par_018_hindsight_bias",
+    "pillar": "human_paradox",
+    "topic": "human_paradox",
+    "format": "paradox_opener",
+    "topic_tag": "Tâm lý học",
+    "text": "Sau khi biết kết quả bất ngờ của một vụ cá cược hay dự án, não bộ tự động viết lại ký ức để ta đinh ninh mình đã dự đoán đúng từ trước.\n\nĐây là Thiên kiến Nhận thức muộn, khi cơ chế tổng hợp thông tin của não cố gắng sắp xếp lại mọi dữ kiện quá khứ để tạo ra sự hợp lý giả tạo nhằm tiết kiệm năng lượng nhận thức.\n\nBạn hay tự trách bản thân vì không thấy trước mọi việc hay hay tự mãn vì nghĩ mình đoán chuẩn từ đầu?",
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 80,
+    "engine_version": "3.1",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-23",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 13,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP429",
+          "attempts": 4,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18080325617432207"
   }
 ]
