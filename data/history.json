@@ -1075,5 +1075,77 @@
       ]
     },
     "post_id": "18051235364826745"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-24T07:30:31.712388+00:00",
+    "slot": "2026-11-24:h14",
+    "id": "18099281990158842",
+    "seed_id": "brn_021_mirror_exposure_photo",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Bạn thấy lạ lẫm và kém xinh mỗi khi nhìn ảnh chụp camera sau, nhưng lại thấy ổn hơn khi soi gương?\n\nĐằng sau cảm giác khó chịu này là một cơ chế quen thuộc của bộ não.",
+    "thread_replies": [
+      "Gương chiếu hình ảnh bị lật ngang mà bạn nhìn thấy hàng nghìn lần mỗi ngày, tạo thành một phiên bản quen thuộc trong trí nhớ.\n\nTrong khi đó, camera sau chụp đúng chiều thực tế, khiến khuôn mặt không đối xứng hoàn toàn của bạn trông lạ lẫm với chính chủ.",
+      "Bạn không hề xấu đi khi lên hình, chỉ là bộ não đang bối rối trước một góc nhìn chưa đủ quen thuộc.\n\nBạn thường tin vào phiên bản nào hơn khi ngắm mình mỗi ngày?"
+    ],
+    "followup_reply": "Gương chiếu hình ảnh bị lật ngang mà bạn nhìn thấy hàng nghìn lần mỗi ngày, tạo thành một phiên bản quen thuộc trong trí nhớ.\n\nTrong khi đó, camera sau chụp đúng chiều thực tế, khiến khuôn mặt không đối xứng hoàn toàn của bạn trông lạ lẫm với chính chủ.",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-24",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 8,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP503",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18099281990158842",
+    "followup_post_id": "18003071847041827",
+    "followup_post_ids": [
+      "18003071847041827",
+      "18123796444945043"
+    ]
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-24T07:32:59.712356+00:00",
+    "reply_to_id": "18137641852738768",
+    "parent_post_id": "18051235364826745",
+    "text": "Giữ lại đứa bạn sai quánh đó rồi sau này nó đẩy mình xuống vực lúc nào không hay.",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "18203612878390713"
   }
 ]
