@@ -97,6 +97,18 @@
         "source": "threads_api",
         "format": "thought_experiment",
         "pillar": "philosophy"
+      },
+      "h72": {
+        "views": 21,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-24T04:31:31.280987+00:00",
+        "age_hours": 62.02,
+        "source": "threads_api",
+        "format": "thought_experiment",
+        "pillar": "philosophy"
       }
     },
     "18122410300758367": {
@@ -193,6 +205,20 @@
         "source": "threads_api",
         "format": "paradox_opener",
         "pillar": "human_paradox"
+      }
+    },
+    "18129363535900320": {
+      "h24": {
+        "views": 1476,
+        "likes": 20,
+        "replies": 4,
+        "reposts": 2,
+        "quotes": 0,
+        "collected_at": "2026-11-24T04:31:31.280987+00:00",
+        "age_hours": 21.02,
+        "source": "threads_api",
+        "format": "brain_hook_chain",
+        "pillar": "brain_glitch"
       }
     }
   }

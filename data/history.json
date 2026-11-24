@@ -1015,5 +1015,65 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.2",
     "id": "18359161540267828"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-24T04:30:28.626117+00:00",
+    "slot": "2026-11-24:h11",
+    "id": "18051235364826745",
+    "seed_id": "dil_020_loyalty_vs_justice",
+    "pillar": "dilemma",
+    "topic": "dilemma",
+    "format": "micro_dilemma",
+    "topic_tag": "Tâm lý học",
+    "text": "Bạn thân nhất của bạn làm sai, đẩy hết thiệt thòi sang một người lạ hoàn toàn vô tội. Im lặng thì giữ được tình bạn, nói ra sự thật thì đứt gánh với nhau.\n\nBạn chọn bảo vệ bạn mình hay đứng về phía công bằng?",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 75,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-24",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 5,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "failed:JSONDecodeError"
+        },
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18051235364826745"
   }
 ]
