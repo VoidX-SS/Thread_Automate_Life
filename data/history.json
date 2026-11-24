@@ -951,5 +951,69 @@
     "post_id": "18129363535900320",
     "followup_post_id": "18079012304737868",
     "id": "18129363535900320"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-24T00:30:25.530542+00:00",
+    "slot": "2026-11-24:h07",
+    "id": "17980689515932373",
+    "seed_id": "phi_013_dichotomy_of_control",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "repost_manifesto",
+    "topic_tag": "Triết học",
+    "text": "Rất nhiều cơn overthinking bắt nguồn từ một thói quen:\nta dồn hết sức cố kiểm soát lời nói và cảm xúc của người khác,\ntrong khi bỏ mặc thứ duy nhất mình quyết được là cách mình phản ứng.",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-24",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 2,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 2,
+          "status": "ok_attempt_2"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17980689515932373"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-24T00:33:31.166621+00:00",
+    "reply_to_id": "18112079135635242",
+    "parent_post_id": "18129363535900320",
+    "text": "Bị phũ thẳng mặt đau thật nhưng dứt khoát luôn khỏi mất công ngóng chờ.",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "18359161540267828"
   }
 ]
