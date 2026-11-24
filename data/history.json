@@ -1147,5 +1147,66 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.2",
     "id": "18203612878390713"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-24T11:30:28.180658+00:00",
+    "slot": "2026-11-24:h18",
+    "seed_id": "reserve_v32_solomon_chain",
+    "pillar": "human_paradox",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Tại sao khi bạn bè bế tắc ta khuyên cực kỳ tỉnh táo, nhưng tới đúng chuyện của mình lại rối tung không biết làm sao?",
+    "thread_replies": [
+      "Tâm lý học gọi đây là Nghịch lý Solomon. Khi chuyện xảy ra với mình, cảm xúc sợ mất mát và lo âu ngắn hạn chiếm hết băng thông xử lý của bộ não.",
+      "Lúc khuyên người khác, khoảng cách tâm lý giúp bạn nhìn bức tranh dài hạn và bỏ qua những chi tiết nhiễu. Chỉ cần tự hỏi nếu bạn thân rơi vào đúng cảnh này mình sẽ khuyên gì, đầu óc thường sáng ra hẳn.\n\nBạn có hay tự áp dụng được lời khuyên của chính mình không?"
+    ],
+    "poll_options": [],
+    "topic": "human_paradox",
+    "followup_reply": "Tâm lý học gọi đây là Nghịch lý Solomon. Khi chuyện xảy ra với mình, cảm xúc sợ mất mát và lo âu ngắn hạn chiếm hết băng thông xử lý của bộ não.",
+    "source": "curated_reserve",
+    "engine_version": "3.2",
+    "editor_score": null,
+    "trend_used": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-24",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 4,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 10,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 2,
+          "status": "ok_attempt_2"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "failed:APIError"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "failed:APIError"
+        }
+      ]
+    },
+    "post_id": "17920145931550525",
+    "followup_post_id": "18164943484500549",
+    "followup_post_ids": [
+      "18164943484500549",
+      "17979382893172380"
+    ],
+    "id": "17920145931550525"
   }
 ]
