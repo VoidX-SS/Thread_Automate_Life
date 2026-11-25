@@ -1208,5 +1208,58 @@
       "17979382893172380"
     ],
     "id": "17920145931550525"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-25T00:30:25.014020+00:00",
+    "slot": "2026-11-25:h07",
+    "id": "17877670137638489",
+    "seed_id": "phi_040_memento_mori",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "repost_manifesto",
+    "topic_tag": "Triết học",
+    "text": "Nhắc mình rằng thời gian hữu hạn không phải để bi quan,\nmà để lọc bỏ những cơn giận vụn vặt và thói quen trì hoãn.\nKhi nhớ mình không sống mãi, tự nhiên biết chuyện gì đáng giữ và chuyện gì nên buông.",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-25",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 2,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 2,
+          "status": "ok_attempt_2"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17877670137638489"
   }
 ]

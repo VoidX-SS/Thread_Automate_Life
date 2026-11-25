@@ -27,6 +27,18 @@
         "source": "threads_api",
         "format": "brain_hook_chain",
         "pillar": "brain_glitch"
+      },
+      "h72": {
+        "views": 263,
+        "likes": 1,
+        "replies": 1,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-25T00:32:44.888773+00:00",
+        "age_hours": 65.37,
+        "source": "threads_api",
+        "format": "brain_hook_chain",
+        "pillar": "brain_glitch"
       }
     },
     "17941381239403486": {
@@ -41,6 +53,18 @@
         "source": "threads_api",
         "format": "dilemma_poll",
         "pillar": "philosophy"
+      },
+      "h72": {
+        "views": 149,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-25T00:32:44.888773+00:00",
+        "age_hours": 68.04,
+        "source": "threads_api",
+        "format": "dilemma_poll",
+        "pillar": "philosophy"
       }
     },
     "18141885394653312": {
@@ -52,6 +76,18 @@
         "quotes": 0,
         "collected_at": "2026-11-23T11:30:27.925169+00:00",
         "age_hours": 35.0,
+        "source": "threads_api",
+        "format": "paradox_opener",
+        "pillar": "human_paradox"
+      },
+      "h72": {
+        "views": 190,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-25T00:32:44.888773+00:00",
+        "age_hours": 72.04,
         "source": "threads_api",
         "format": "paradox_opener",
         "pillar": "human_paradox"
@@ -243,6 +279,34 @@
         "source": "threads_api",
         "format": "brain_hook_chain",
         "pillar": "brain_glitch"
+      }
+    },
+    "18051235364826745": {
+      "h24": {
+        "views": 50,
+        "likes": 0,
+        "replies": 2,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-25T00:32:44.888773+00:00",
+        "age_hours": 20.04,
+        "source": "threads_api",
+        "format": "micro_dilemma",
+        "pillar": "dilemma"
+      }
+    },
+    "17980689515932373": {
+      "h24": {
+        "views": 2,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-25T00:32:44.888773+00:00",
+        "age_hours": 24.04,
+        "source": "threads_api",
+        "format": "repost_manifesto",
+        "pillar": "philosophy"
       }
     }
   }
