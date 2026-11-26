@@ -1261,5 +1261,68 @@
       ]
     },
     "post_id": "17877670137638489"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-26T00:30:27.847180+00:00",
+    "slot": "2026-11-26:h07",
+    "id": "18001702649826551",
+    "seed_id": "brn_050_predictive_processing",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Tại sao khi cầm nhầm ly trà đá lên uống mà đinh ninh là nước lọc, ngụm đầu tiên lại thấy vị kỳ quái đến rùng mình?\n\nKhông phải trà hỏng, mà là não bạn vừa bị hẫng.",
+    "thread_replies": [
+      "Khoa học thần kinh hiện đại gọi đây là cơ chế bộ não dự đoán mà nhà triết học Andy Clark nhắc tới. Thay vì thu nhận thế giới thụ động như một chiếc máy quay, não luôn tự dựng sẵn kịch bản trước khi bạn kịp chạm vào sự việc.",
+      "Khi kịch bản trong đầu là nước lọc nhưng đầu lưỡi báo về vị chát của trà, não lập tức phát tín hiệu lỗi. Trong tình cảm hay công việc cũng vậy, ta hay thấy sốc không hẳn vì chuyện quá tệ, mà vì nó lệch hẳn kỳ vọng ta tự vẽ ra từ trước.",
+      "Hầu hết nỗi thất vọng lặng lẽ đều đến từ khoảng chênh giữa điều mình đoán trước và thực tế đang diễn ra.\n\nGần đây nhất, có chuyện gì khiến bạn hẫng vì thực tế đi ngược hẳn kịch bản trong đầu không?"
+    ],
+    "followup_reply": "Khoa học thần kinh hiện đại gọi đây là cơ chế bộ não dự đoán mà nhà triết học Andy Clark nhắc tới. Thay vì thu nhận thế giới thụ động như một chiếc máy quay, não luôn tự dựng sẵn kịch bản trước khi bạn kịp chạm vào sự việc.",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-26",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 2,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 2,
+          "status": "ok_attempt_2"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18001702649826551",
+    "followup_post_id": "17874910494643418",
+    "followup_post_ids": [
+      "17874910494643418",
+      "17978074305157483",
+      "18147231562610118"
+    ]
   }
 ]
