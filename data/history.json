@@ -1324,5 +1324,58 @@
       "17978074305157483",
       "18147231562610118"
     ]
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-26T04:30:27.342706+00:00",
+    "slot": "2026-11-26:h11",
+    "id": "18118294973040815",
+    "seed_id": "par_013_mere_exposure_effect",
+    "pillar": "human_paradox",
+    "topic": "human_paradox",
+    "format": "repost_manifesto",
+    "topic_tag": "Tâm lý học",
+    "text": "Nhiều khi ta nảy sinh thiện cảm với một người\nkhông phải vì họ đặc biệt hợp với mình,\nmà vì lặp đi lặp lại đủ lâu nên não nhầm sự quen thuộc thành an toàn.",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 95,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-26",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 2,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 4,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18118294973040815"
   }
 ]
