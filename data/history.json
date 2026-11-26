@@ -1430,5 +1430,58 @@
       ]
     },
     "post_id": "18186773413428565"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-26T11:30:27.713306+00:00",
+    "slot": "2026-11-26:h18",
+    "id": "17929089357199675",
+    "seed_id": "dil_001_experience_machine",
+    "pillar": "dilemma",
+    "topic": "dilemma",
+    "format": "micro_dilemma",
+    "topic_tag": "Tâm lý học",
+    "text": "Nếu cỗ máy ảo giác có thể thiết kế sẵn cho bạn một đời sống ngập tràn hạnh phúc y như thật suốt phần đời còn lại và bắt bạn quên đi sự thật, bạn có bước vào không?",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 90,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-26",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 9,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_HTTP503",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17929089357199675"
   }
 ]
