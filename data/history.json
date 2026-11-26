@@ -1483,5 +1483,80 @@
       ]
     },
     "post_id": "17929089357199675"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-26T14:30:27.932601+00:00",
+    "slot": "2026-11-26:h21",
+    "id": "18075344609749885",
+    "seed_id": "phi_032_pascal_distraction",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "micro_dilemma",
+    "topic_tag": "Triết học",
+    "text": "Bốn trăm năm trước khi có điện thoại, con người đã luôn tìm cách vùi đầu vào công việc và tiệc tùng chỉ để khỏi phải đối diện với sự tĩnh lặng của chính mình.\n\nGiữa một khoảng trống không tiếng ồn, bạn thấy bình yên hay sợ hãi?",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-26",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 12,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18075344609749885"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-26T14:33:51.060145+00:00",
+    "reply_to_id": "17995893306076880",
+    "parent_post_id": "17929089357199675",
+    "text": "Lôi Phật tánh ra cách nào khi trong đầu toàn hạn nộp đơn trễ vậy bạn?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "18126940013319109"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-26T14:33:51.060145+00:00",
+    "reply_to_id": "18114347780621255",
+    "parent_post_id": "17929089357199675",
+    "text": "Xóa hết đi thì nhẹ đầu thật đấy, nhưng lúc tỉnh lại hóa ra mình chỉ là một kẻ mộng du hả bạn?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "17978167611171489"
   }
 ]
