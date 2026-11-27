@@ -1558,5 +1558,79 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.2",
     "id": "17978167611171489"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-27T00:30:28.280124+00:00",
+    "slot": "2026-11-27:h07",
+    "id": "18048350327831425",
+    "seed_id": "brn_004_jamais_vu",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Có bao giờ bạn nhìn chằm chằm vào một chữ viết tay quen thuộc hoặc con đường đi làm mỗi ngày, rồi bỗng dưng thấy nó lạ hoắc như chưa từng gặp?",
+    "thread_replies": [
+      "Nếu Déjà Vu là cảm giác lạ mà tưởng quen, thì trạng thái ngược lại đó gọi là Jamais Vu: quen đến mức thuộc lòng nhưng bỗng dưng thấy hoàn toàn xa lạ trong vài giây.",
+      "Các nhà nghiên cứu nhận thức xem đây như một tín hiệu kiểm tra thực tế của bộ não. Khi bạn lặp lại một thói quen quá nhiều đến mức chạy tự động, não bỗng bật chế độ ngắt để buộc bạn ý thức lại mình đang nhìn gì.",
+      "Đó cũng là lý do đôi khi ngồi giữa căn phòng của chính mình hoặc nhìn mặt người quen lâu năm, bạn vẫn chợt khựng lại một nhịp.\n\nBạn từng gặp khoảnh khắc thấy một thứ siêu quen bỗng hóa xa lạ như vậy chưa, và lúc đó là thứ gì?"
+    ],
+    "followup_reply": "Nếu Déjà Vu là cảm giác lạ mà tưởng quen, thì trạng thái ngược lại đó gọi là Jamais Vu: quen đến mức thuộc lòng nhưng bỗng dưng thấy hoàn toàn xa lạ trong vài giây.",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-27",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 2,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18048350327831425",
+    "followup_post_id": "18121746407098909",
+    "followup_post_ids": [
+      "18121746407098909",
+      "17895648885653726",
+      "18038726687888128"
+    ]
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-27T00:32:35.689962+00:00",
+    "reply_to_id": "18474457201189606",
+    "parent_post_id": "17929089357199675",
+    "text": "Lo xa ghê, mười năm nữa chắc gì máy móc đã bền bằng cái sự lười của mình.",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "17959560723273009"
   }
 ]
