@@ -460,6 +460,20 @@
         "format": "decode_chain",
         "pillar": "brain_glitch"
       }
+    },
+    "18186773413428565": {
+      "h24": {
+        "views": 59,
+        "likes": 1,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-27T04:31:08.025211+00:00",
+        "age_hours": 21.01,
+        "source": "threads_api",
+        "format": "repost_manifesto",
+        "pillar": "philosophy"
+      }
     }
   }
 }
