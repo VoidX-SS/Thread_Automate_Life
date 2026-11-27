@@ -1802,5 +1802,61 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.2",
     "id": "18155760310482936"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-27T14:30:30.815562+00:00",
+    "slot": "2026-11-27:h21",
+    "id": "18161840773513873",
+    "seed_id": "dil_006_certain_vs_gamble",
+    "pillar": "dilemma",
+    "topic": "dilemma",
+    "format": "dilemma_poll",
+    "topic_tag": "Tâm lý học",
+    "text": "Trước mặt bạn là hai phong bì: một bên cầm chắc 50 triệu mang về ngay, bên kia tung đồng xu 50/50 để nhận 130 triệu hoặc ra về tay trắng.\n\nLý trí biết cửa cược lời hơn, nhưng cảm giác an toàn lại kéo tay về phía chắc ăn. Bạn chọn bên nào?",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [
+      "Lấy ngay 50tr",
+      "Cược 50/50 130tr"
+    ],
+    "source": "gemini_editor",
+    "editor_score": 86,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-27",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 3,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 20,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18161840773513873"
   }
 ]
