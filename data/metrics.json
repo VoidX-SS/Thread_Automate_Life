@@ -474,6 +474,20 @@
         "format": "repost_manifesto",
         "pillar": "philosophy"
       }
+    },
+    "17929089357199675": {
+      "h24": {
+        "views": 183,
+        "likes": 3,
+        "replies": 8,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-27T07:32:35.924607+00:00",
+        "age_hours": 20.04,
+        "source": "threads_api",
+        "format": "micro_dilemma",
+        "pillar": "dilemma"
+      }
     }
   }
 }

@@ -1685,5 +1685,58 @@
       ]
     },
     "post_id": "18147413683514988"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-27T07:30:27.303857+00:00",
+    "slot": "2026-11-27:h14",
+    "id": "17884337991543579",
+    "seed_id": "phi_018_ockhams_razor",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "micro_dilemma",
+    "topic_tag": "Triết học",
+    "text": "Đêm khuya overthinking vẽ ra hàng loạt kịch bản phức tạp cho một tin nhắn ngắn ngủn, trong khi lời giải đơn giản nhất là họ đang bận hoặc buồn ngủ.\n\nGiữa sự thật rõ ràng và trí tưởng tượng, bạn hay chọn làm khổ mình bằng cái nào?",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-27",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 2,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 11,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17884337991543579"
   }
 ]
