@@ -514,6 +514,34 @@
         "format": "micro_dilemma",
         "pillar": "philosophy"
       }
+    },
+    "18147413683514988": {
+      "h24": {
+        "views": 170,
+        "likes": 2,
+        "replies": 2,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-28T00:31:24.258417+00:00",
+        "age_hours": 20.01,
+        "source": "threads_api",
+        "format": "micro_dilemma",
+        "pillar": "dilemma"
+      }
+    },
+    "18048350327831425": {
+      "h24": {
+        "views": 68,
+        "likes": 0,
+        "replies": 3,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-28T00:31:24.258417+00:00",
+        "age_hours": 24.02,
+        "source": "threads_api",
+        "format": "decode_chain",
+        "pillar": "brain_glitch"
+      }
     }
   }
 }
