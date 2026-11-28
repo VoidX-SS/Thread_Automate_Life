@@ -556,6 +556,20 @@
         "format": "micro_dilemma",
         "pillar": "philosophy"
       }
+    },
+    "18199711258393820": {
+      "h24": {
+        "views": 22,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-28T07:34:36.701905+00:00",
+        "age_hours": 20.07,
+        "source": "threads_api",
+        "format": "micro_dilemma",
+        "pillar": "dilemma"
+      }
     }
   }
 }

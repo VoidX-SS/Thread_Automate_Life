@@ -1974,5 +1974,69 @@
       "18224700433346305",
       "18148876795584262"
     ]
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-28T07:30:29.422072+00:00",
+    "slot": "2026-11-28:h14",
+    "id": "17969653257241242",
+    "seed_id": "phi_001_veil_of_ignorance",
+    "pillar": "philosophy",
+    "topic": "philosophy",
+    "format": "repost_manifesto",
+    "topic_tag": "Triết học",
+    "text": "Rất nhiều quy tắc ta thấy hiển nhiên hợp lý thực ra chỉ vì ta vô tình đang đứng ở phía hưởng lợi.\n\nSự công bằng thực sự chỉ xuất hiện khi bạn dám thiết kế luật chơi mà chưa biết mình sinh ra ở vạch đích hay vạch xuất phát.",
+    "thread_replies": [],
+    "followup_reply": "",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-28",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 10,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17969653257241242"
+  },
+  {
+    "mode": "reply",
+    "at": "2026-11-28T07:34:36.701905+00:00",
+    "reply_to_id": "17888337516628178",
+    "parent_post_id": "17929089357199675",
+    "text": "Nghe nặng nề quá, bỏ hết mấy thứ ngoài thân đi thì cậu còn lại gì nào?",
+    "dry_run": false,
+    "source": "gemini_workhorse_reply",
+    "engine_version": "3.2",
+    "id": "18230789290326793"
   }
 ]
