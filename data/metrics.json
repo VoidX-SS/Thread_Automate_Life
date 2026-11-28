@@ -570,6 +570,20 @@
         "format": "micro_dilemma",
         "pillar": "dilemma"
       }
+    },
+    "18161840773513873": {
+      "h24": {
+        "views": 14,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-28T11:32:54.012247+00:00",
+        "age_hours": 21.04,
+        "source": "threads_api",
+        "format": "dilemma_poll",
+        "pillar": "dilemma"
+      }
     }
   }
 }

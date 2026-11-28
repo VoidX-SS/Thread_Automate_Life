@@ -2038,5 +2038,68 @@
     "source": "gemini_workhorse_reply",
     "engine_version": "3.2",
     "id": "18230789290326793"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-28T11:30:32.874231+00:00",
+    "slot": "2026-11-28:h18",
+    "id": "17929300335204388",
+    "seed_id": "brn_038_cryptomnesia",
+    "pillar": "brain_glitch",
+    "topic": "brain_glitch",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Có bao giờ bạn háo hức kể một ý tưởng mình vừa nghĩ ra, để rồi sững người khi biết nó giống hệt câu từng đọc ở đâu đó nhiều năm trước?",
+    "thread_replies": [
+      "Trong tâm lý học, hiện tượng này gọi là Đạo văn vô thức. Một mảnh ký ức bạn từng đọc, nghe lướt qua hoặc trò chuyện từ lâu bất ngờ trồi lên lại trong đầu, nhưng lại bị rớt mất thẻ nguồn gốc.",
+      "Não bộ vốn giỏi lưu lại nội dung và cảm xúc hơn là lưu tên tác giả của nội dung đó. Vì không thấy dấu vết ký ức gốc đâu, ta đinh ninh mình vừa tự sáng tạo ra một góc nhìn hoàn toàn mới mẻ.",
+      "Điều này cũng giải thích vì sao đôi lúc ta vô tình lặp lại chính câu nói của người yêu cũ hay một cuốn sách cũ mà cứ tưởng là suy nghĩ tự nhiên của mình. Bạn từng bắt gặp mình rơi vào tình huống này chưa?"
+    ],
+    "followup_reply": "Trong tâm lý học, hiện tượng này gọi là Đạo văn vô thức. Một mảnh ký ức bạn từng đọc, nghe lướt qua hoặc trò chuyện từ lâu bất ngờ trồi lên lại trong đầu, nhưng lại bị rớt mất thẻ nguồn gốc.",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-28",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 2,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 14,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-4-hydrogen",
+          "fallback": null,
+          "attempts": 2,
+          "status": "ok_attempt_2"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "17929300335204388",
+    "followup_post_id": "18138180283738620",
+    "followup_post_ids": [
+      "18138180283738620",
+      "18115075280238668",
+      "17897372775433112"
+    ]
   }
 ]
