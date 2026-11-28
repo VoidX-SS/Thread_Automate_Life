@@ -542,6 +542,20 @@
         "format": "decode_chain",
         "pillar": "brain_glitch"
       }
+    },
+    "17884337991543579": {
+      "h24": {
+        "views": 29,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0,
+        "collected_at": "2026-11-28T04:33:14.509860+00:00",
+        "age_hours": 21.05,
+        "source": "threads_api",
+        "format": "micro_dilemma",
+        "pillar": "philosophy"
+      }
     }
   }
 }

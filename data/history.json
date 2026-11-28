@@ -1911,5 +1911,68 @@
       ]
     },
     "post_id": "18152318143583929"
+  },
+  {
+    "mode": "post",
+    "dry_run": false,
+    "at": "2026-11-28T04:30:27.070105+00:00",
+    "slot": "2026-11-28:h11",
+    "id": "18187279198423107",
+    "seed_id": "par_042_door_in_the_face",
+    "pillar": "human_paradox",
+    "topic": "human_paradox",
+    "format": "decode_chain",
+    "topic_tag": "Tâm lý học",
+    "text": "Vì sao khi bạn từ chối một lời đề nghị quá lớn, bạn lại dễ dàng gật đầu ngay với yêu cầu nhỏ hơn ngay sau đó?",
+    "thread_replies": [
+      "Trong các cuộc thương lượng giá cả hay xin phép, lời đề nghị đầu tiên thực ra chỉ đóng vai trò làm mỏ neo cho tâm lý.",
+      "Khi đối phương chủ động rút lui mức độ yêu cầu, bộ năng lực phán đoán của bạn lập tức bật cơ chế có qua có lại để giữ hòa khí.",
+      "Lần gần đây nhất bạn mềm lòng nhận lời vì một màn lùi bước chiến thuật như thế là khi nào?"
+    ],
+    "followup_reply": "Trong các cuộc thương lượng giá cả hay xin phép, lời đề nghị đầu tiên thực ra chỉ đóng vai trò làm mỏ neo cho tâm lý.",
+    "poll_options": [],
+    "source": "gemini_editor",
+    "editor_score": 100,
+    "engine_version": "3.2",
+    "trend_context_present": false,
+    "trend_source_counts": {},
+    "model_routing": {
+      "day_vn": "2026-11-28",
+      "flagship_model": "gemini-4-hydrogen",
+      "workhorse_model": "gemini-3.5-flash-lite",
+      "flagship_used_today": 1,
+      "flagship_daily_cap": 20,
+      "workhorse_used_today": 6,
+      "trace": [
+        {
+          "role": "post_writer",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": "flagship_error_RuntimeError",
+          "attempts": 2,
+          "status": "ok_after_fallback"
+        },
+        {
+          "role": "post_screener",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        },
+        {
+          "role": "post_chief_editor",
+          "model": "gemini-3.5-flash-lite",
+          "fallback": null,
+          "attempts": 1,
+          "status": "ok"
+        }
+      ]
+    },
+    "post_id": "18187279198423107",
+    "followup_post_id": "17937369009214042",
+    "followup_post_ids": [
+      "17937369009214042",
+      "18224700433346305",
+      "18148876795584262"
+    ]
   }
 ]
